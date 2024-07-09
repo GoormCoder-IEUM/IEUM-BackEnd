@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.config;
 
+import com.goormcoder.ieum.domain.MemberRole;
 import com.goormcoder.ieum.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +32,10 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                                .anyRequest().permitAll()
-//                                .anyRequest().authenticated()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/auth/login/**", "/auth/join/**").permitAll()
+                        //.anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
