@@ -22,6 +22,11 @@ public class MemberService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
+    public Member findByLoginIdAndPassword(String loginId, String password) {
+        return memberRepository.findByLoginIdAndPassword(loginId, password)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
     @Transactional
     public Member createByLoginId(MemberCreateDto createDto) {
         checkExistedLoginId(createDto.loginId());
