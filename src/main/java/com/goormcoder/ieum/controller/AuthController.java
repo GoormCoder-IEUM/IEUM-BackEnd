@@ -10,6 +10,7 @@ import com.goormcoder.ieum.service.MemberService;
 import com.goormcoder.ieum.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,18 @@ public class AuthController {
         JwtTokenDto jwtToken = jwtProvider.generateToken(member);
         refreshTokenService.save(jwtToken.refreshToken());
         return ResponseEntity.ok(jwtToken);
+    }
+
+    @Operation(summary = "액세스 토큰 재발급")
+    @PostMapping("/refresh")
+    public ResponseEntity<String> refresh(@RequestBody String refreshToken) {
+        if (!refreshTokenService.isExists(refreshToken)) {
+            return ResponseEntity.ok("만료되었거나 유효하지 않은 리프래시 토큰입니다.");
+        }
+        UUID memberId = jwtProvider.getMemberIdFromRefreshToken(refreshToken);
+        Member member = memberService.findById(memberId);
+        String accessToken = jwtProvider.generateAccessToken(member);
+        return ResponseEntity.ok(accessToken);
     }
 
 }

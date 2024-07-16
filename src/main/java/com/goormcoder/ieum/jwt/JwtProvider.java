@@ -14,6 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -85,6 +86,20 @@ public class JwtProvider {
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
         return new UsernamePasswordAuthenticationToken(new UserPrincipal(id), "", Collections.singletonList(authority));
+    }
+
+    public UUID getMemberIdFromRefreshToken(String refreshToken) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody();
+
+        if (claims.get("id") == null) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+
+        return UUID.fromString(claims.get("id").toString());
     }
 
 }
