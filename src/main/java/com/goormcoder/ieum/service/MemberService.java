@@ -10,24 +10,36 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Member findById(UUID id) {
         return memberRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    public Member findByLoginIdAndPassword(String loginId, String password) {
-        return memberRepository.findByLoginIdAndPassword(loginId, password)
+    public Member findByLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId)
                 .orElseThrow(EntityNotFoundException::new);
+    }
+
+    public Member findByLoginIdAndPassword(String loginId, String password) {
+        Member member = this.findByLoginId(loginId);
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new AccessDeniedException("비밀번호가 일치하지 않습니다.");
+        }
+        return member;
     }
 
     @Transactional
@@ -39,7 +51,7 @@ public class MemberService {
                 .gender(createDto.gender())
                 .birth(createDto.birth())
                 .loginId(createDto.loginId())
-                .password(createDto.password())
+                .password(passwordEncoder.encode(createDto.password()))
                 .oauthType(null)
                 .oauthId(null)
                 .build();
@@ -62,7 +74,7 @@ public class MemberService {
             throw new AccessDeniedException("비밀번호가 일치하지 않습니다.");
         }
 
-        member.setPassword(updateDto.newPassword());
+        member.setPassword(passwordEncoder.encode(updateDto.newPassword()));
         memberRepository.save(member);
     }
 
