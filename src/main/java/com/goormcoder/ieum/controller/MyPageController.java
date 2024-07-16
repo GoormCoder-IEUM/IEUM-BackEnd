@@ -1,6 +1,7 @@
 package com.goormcoder.ieum.controller;
 
 import com.goormcoder.ieum.domain.Member;
+import com.goormcoder.ieum.dto.request.MemberUpdateDto;
 import com.goormcoder.ieum.dto.response.MemberFindDto;
 import com.goormcoder.ieum.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +29,15 @@ public class MyPageController {
     public ResponseEntity<MemberFindDto> findMemberInfo() {
         UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member member = memberService.findById(memberId);
+        return ResponseEntity.ok(MemberFindDto.of(member));
+    }
+
+    @PostMapping
+    @Operation(summary = "내 정보 수정", description = "이름, ")
+    public ResponseEntity<MemberFindDto> updateInfo(@RequestBody MemberUpdateDto updateDto) {
+        UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        Member member = memberService.findById(memberId);
+        memberService.update(member, updateDto);
         return ResponseEntity.ok(MemberFindDto.of(member));
     }
 

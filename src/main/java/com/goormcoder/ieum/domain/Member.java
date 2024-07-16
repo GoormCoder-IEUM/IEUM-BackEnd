@@ -57,6 +57,18 @@ public class Member implements UserDetails {
         this.oauthId = oauthId;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setBirth(LocalDateTime birth) {
+        this.birth = birth;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

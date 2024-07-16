@@ -3,6 +3,7 @@ package com.goormcoder.ieum.service;
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.MemberRole;
 import com.goormcoder.ieum.dto.request.MemberCreateDto;
+import com.goormcoder.ieum.dto.request.MemberUpdateDto;
 import com.goormcoder.ieum.repository.MemberRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,6 +41,15 @@ public class MemberService {
                 .oauthType(null)
                 .oauthId(null)
                 .build();
+        memberRepository.save(member);
+        return member;
+    }
+
+    @Transactional
+    public Member update(Member member, MemberUpdateDto updateDto) {
+        member.setName(updateDto.name());
+        member.setGender(updateDto.gender());
+        member.setBirth(updateDto.birth());
         memberRepository.save(member);
         return member;
     }
