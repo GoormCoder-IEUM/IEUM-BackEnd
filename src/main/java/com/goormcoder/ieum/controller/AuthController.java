@@ -7,6 +7,7 @@ import com.goormcoder.ieum.dto.response.JwtTokenDto;
 import com.goormcoder.ieum.dto.response.MemberFindDto;
 import com.goormcoder.ieum.jwt.JwtProvider;
 import com.goormcoder.ieum.service.MemberService;
+import com.goormcoder.ieum.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class AuthController {
 
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
     @Operation(summary = "자체 회원 가입")
     @PostMapping("/join")
@@ -37,6 +39,7 @@ public class AuthController {
     public ResponseEntity<JwtTokenDto> login(@RequestBody LoginDto loginDto) {
         Member member = memberService.findByLoginIdAndPassword(loginDto.loginId(), loginDto.password());
         JwtTokenDto jwtToken = jwtProvider.generateToken(member);
+        refreshTokenService.save(jwtToken.refreshToken());
         return ResponseEntity.ok(jwtToken);
     }
 
