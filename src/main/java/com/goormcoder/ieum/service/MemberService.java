@@ -4,11 +4,13 @@ import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.MemberRole;
 import com.goormcoder.ieum.dto.request.MemberCreateDto;
 import com.goormcoder.ieum.dto.request.MemberUpdateDto;
+import com.goormcoder.ieum.dto.request.PasswordUpdateDto;
 import com.goormcoder.ieum.repository.MemberRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,16 @@ public class MemberService {
         member.setBirth(updateDto.birth());
         memberRepository.save(member);
         return member;
+    }
+
+    @Transactional
+    public void updatePassword(Member member, PasswordUpdateDto updateDto) {
+        if (!member.getPassword().equals(updateDto.previousPassword())) {
+            throw new AccessDeniedException("비밀번호가 일치하지 않습니다.");
+        }
+
+        member.setPassword(updateDto.newPassword());
+        memberRepository.save(member);
     }
 
     private void checkExistedLoginId(String loginId) {

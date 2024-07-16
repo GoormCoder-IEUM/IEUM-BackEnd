@@ -2,6 +2,7 @@ package com.goormcoder.ieum.controller;
 
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.dto.request.MemberUpdateDto;
+import com.goormcoder.ieum.dto.request.PasswordUpdateDto;
 import com.goormcoder.ieum.dto.response.MemberFindDto;
 import com.goormcoder.ieum.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,15 @@ public class MyPageController {
         Member member = memberService.findById(memberId);
         memberService.update(member, updateDto);
         return ResponseEntity.ok(MemberFindDto.of(member));
+    }
+
+    @PostMapping("/password")
+    @Operation(summary = "비밀번호 수정")
+    public ResponseEntity<String> updatePassword(@RequestBody PasswordUpdateDto updateDto) {
+        UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        Member member = memberService.findById(memberId);
+        memberService.updatePassword(member, updateDto);
+        return ResponseEntity.ok("비밀번호를 성공적으로 변경했습니다.");
     }
 
 }

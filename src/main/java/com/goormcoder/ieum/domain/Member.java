@@ -69,6 +69,10 @@ public class Member implements UserDetails {
         this.birth = birth;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
