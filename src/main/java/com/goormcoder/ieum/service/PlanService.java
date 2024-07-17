@@ -4,6 +4,7 @@ import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
+import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class PlanService {
 
     private Plan findByPlanId(Long planId) {
         return planRepository.findById(planId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 일정은 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MEMBER_NOT_FOUND.getMessage()));
     }
 
 }
