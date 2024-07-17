@@ -30,7 +30,7 @@ public class Plan extends BaseEntity {
     @Column(nullable = false)
     private PlanVehicle vehicle;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<PlanMember> planMembers = new ArrayList<>();
 
     @Builder
