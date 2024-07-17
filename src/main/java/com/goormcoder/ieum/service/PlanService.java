@@ -42,8 +42,6 @@ public class PlanService {
             plan.addPlanMember(PlanMember.of(plan, member));
         }
 
-        System.out.println(plan.getPlanMembers());
-
         planRepository.save(plan);
     }
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/plan")
+@RequestMapping("/plans")
 @Tag(name = "Plan", description = "일정 관련 API")
 @RequiredArgsConstructor
 public class PlanController {
