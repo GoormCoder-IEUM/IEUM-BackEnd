@@ -4,7 +4,9 @@ import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
+import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
+import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,13 @@ import java.util.stream.Stream;
 public class PlanService {
 
     private final PlanRepository planRepository;
+    private final DestinationRepository destinationRepository;
     private final MemberService memberService;
+
+    @Transactional
+    public List<DestinationFindDto> getAllDestination() {
+        return DestinationFindDto.listOf(destinationRepository.findAll());
+    }
 
     @Transactional
     public void createPlan(PlanCreateDto dto, UUID memberId) {
