@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import main.java.com.goormcoder.ieum.domain.Accommodation;
-import main.java.com.goormcoder.ieum.domain.Place;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

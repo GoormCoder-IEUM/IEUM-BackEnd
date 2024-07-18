@@ -1,6 +1,6 @@
-package main.java.com.goormcoder.ieum.repository;
+package com.goormcoder.ieum.repository;
 
-import main.java.com.goormcoder.ieum.domain.Accommodation;
+import com.goormcoder.ieum.domain.Accommodation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

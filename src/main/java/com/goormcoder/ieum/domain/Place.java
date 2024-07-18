@@ -1,4 +1,4 @@
-package main.java.com.goormcoder.ieum.domain;
+package com.goormcoder.ieum.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -59,5 +59,8 @@ public class Place {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public void setId(Long id) {
     }
 }
