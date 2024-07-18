@@ -18,8 +18,9 @@ public class Plan extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String location;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_id", nullable = false)
+    private Destination destination;
 
     @Column(nullable = false)
     private LocalDateTime startedAt;
@@ -27,6 +28,7 @@ public class Plan extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endedAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlanVehicle vehicle;
 
@@ -40,16 +42,16 @@ public class Plan extends BaseEntity {
     private List<Place> places;
 
     @Builder
-    private Plan(String location, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
-        this.location = location;
+    private Plan(Destination destination, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
+        this.destination = destination;
         this.startedAt = startedAt;
         this.endedAt = endedAt;
         this.vehicle = vehicle;
     }
 
-    public static Plan of(String location, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
+    public static Plan of(Destination destination, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
         return Plan.builder()
-                .location(location)
+                .destination(destination)
                 .startedAt(startedAt)
                 .endedAt(endedAt)
                 .vehicle(vehicle)

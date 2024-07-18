@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record PlanCreateDto(
 
-        String location,
+        Long destinationId,
         LocalDateTime startedAt,
         LocalDateTime endedAt,
         PlanVehicle vehicle
