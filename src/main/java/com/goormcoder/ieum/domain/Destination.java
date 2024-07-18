@@ -18,14 +18,19 @@ public class Destination {
     @Column(nullable = false, unique = true)
     private DestinationType destinationType;
 
+    @Column(nullable = false)
+    private String description;
+
     @Builder
-    private Destination(DestinationType destinationType) {
+    private Destination(DestinationType destinationType, String description) {
         this.destinationType = destinationType;
+        this.description = description;
     }
 
-    public static Destination of(DestinationType destinationType) {
+    public static Destination of(DestinationType destinationType, String description) {
         return Destination.builder()
                 .destinationType(destinationType)
+                .description(description)
                 .build();
     }
 
