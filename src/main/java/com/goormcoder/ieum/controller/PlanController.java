@@ -7,6 +7,7 @@ import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class PlanController {
     }
 
     @PostMapping
-    @Operation(summary = "일정 생성", description = "일정을 생성합니다.")
-    public ResponseEntity<String> createPlan(@RequestBody PlanCreateDto planCreateDto) {
+    @Operation(summary = "일정 생성", description = "일정을 생성합니다. 이동수단(vehicle) 유형 - PUBLIC_TRANSPORTATION 또는 OWN_CAR")
+    public ResponseEntity<String> createPlan(@Valid @RequestBody PlanCreateDto planCreateDto) {
         UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         planService.createPlan(planCreateDto, memberId);
         return ResponseEntity.status(HttpStatus.OK).body("일정이 생성되었습니다.");
