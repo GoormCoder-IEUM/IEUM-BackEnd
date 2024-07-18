@@ -14,22 +14,18 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String code;
-
-    @Column(nullable = false, unique = true)
-    private String name;
+    private CategoryType categoryType;
 
     @Builder
-    private Category(String code, String name) {
-        this.code = code;
-        this.name = name;
+    private Category(CategoryType categoryType) {
+        this.categoryType = categoryType;
     }
 
-    public static Category of(String code, String name) {
+    public static Category of(CategoryType categoryType) {
         return Category.builder()
-                .code(code)
-                .name(name)
+                .categoryType(categoryType)
                 .build();
     }
 

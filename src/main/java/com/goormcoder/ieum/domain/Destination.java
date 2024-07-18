@@ -14,22 +14,18 @@ public class Destination {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String destinationKr;
-
-    @Column(nullable = false, unique = true)
-    private String destinationEn;
+    private DestinationType destinationType;
 
     @Builder
-    private Destination(String destinationKr, String destinationEn) {
-        this.destinationKr = destinationKr;
-        this.destinationEn = destinationEn;
+    private Destination(DestinationType destinationType) {
+        this.destinationType = destinationType;
     }
 
-    public static Destination of(String destinationKr, String destinationEn) {
+    public static Destination of(DestinationType destinationType) {
         return Destination.builder()
-                .destinationKr(destinationKr)
-                .destinationEn(destinationEn)
+                .destinationType(destinationType)
                 .build();
     }
 
