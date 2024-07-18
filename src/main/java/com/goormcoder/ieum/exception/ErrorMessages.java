@@ -9,6 +9,7 @@ public enum ErrorMessages {
 
     // 404 NOT_FOUND
     MEMBER_NOT_FOUND("해당하는 일정이 존재하지 않습니다."),
+    DESTINATION_NOT_FOUND("해당하는 여행지가 존재하지 않습니다."),
 
     ;
 
