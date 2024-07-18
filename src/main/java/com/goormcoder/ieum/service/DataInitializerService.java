@@ -2,9 +2,9 @@ package com.goormcoder.ieum.service;
 
 import com.goormcoder.ieum.config.DestinationDescriptions;
 import com.goormcoder.ieum.domain.Category;
-import com.goormcoder.ieum.domain.CategoryType;
+import com.goormcoder.ieum.domain.enumeration.CategoryType;
 import com.goormcoder.ieum.domain.Destination;
-import com.goormcoder.ieum.domain.DestinationType;
+import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.DestinationRepository;
 import jakarta.annotation.PostConstruct;
@@ -43,16 +43,16 @@ public class DataInitializerService {
     public void createDestinations() {
         if(destinationRepository.count() == 0) {
             List<Destination> destinations = Arrays.asList(
-                    Destination.of(DestinationType.JEJU, descriptions.getDescription().get(DestinationType.JEJU.toString())),
-                    Destination.of(DestinationType.BUSAN, descriptions.getDescription().get(DestinationType.BUSAN.toString())),
-                    Destination.of(DestinationType.SEOUL, descriptions.getDescription().get(DestinationType.SEOUL.toString())),
-                    Destination.of(DestinationType.GYEONGJU, descriptions.getDescription().get(DestinationType.GYEONGJU.toString())),
-                    Destination.of(DestinationType.GANGNEUNG, descriptions.getDescription().get(DestinationType.GANGNEUNG.toString())),
-                    Destination.of(DestinationType.YEOSU, descriptions.getDescription().get(DestinationType.YEOSU.toString())),
-                    Destination.of(DestinationType.JEONJU, descriptions.getDescription().get(DestinationType.JEONJU.toString())),
-                    Destination.of(DestinationType.POHANG, descriptions.getDescription().get(DestinationType.POHANG.toString())),
-                    Destination.of(DestinationType.INCHEON, descriptions.getDescription().get(DestinationType.INCHEON.toString())),
-                    Destination.of(DestinationType.DAEJEON, descriptions.getDescription().get(DestinationType.DAEJEON.toString()))
+                    Destination.of(DestinationName.JEJU, descriptions.getDescription().get(DestinationName.JEJU.toString())),
+                    Destination.of(DestinationName.BUSAN, descriptions.getDescription().get(DestinationName.BUSAN.toString())),
+                    Destination.of(DestinationName.SEOUL, descriptions.getDescription().get(DestinationName.SEOUL.toString())),
+                    Destination.of(DestinationName.GYEONGJU, descriptions.getDescription().get(DestinationName.GYEONGJU.toString())),
+                    Destination.of(DestinationName.GANGNEUNG, descriptions.getDescription().get(DestinationName.GANGNEUNG.toString())),
+                    Destination.of(DestinationName.YEOSU, descriptions.getDescription().get(DestinationName.YEOSU.toString())),
+                    Destination.of(DestinationName.JEONJU, descriptions.getDescription().get(DestinationName.JEONJU.toString())),
+                    Destination.of(DestinationName.POHANG, descriptions.getDescription().get(DestinationName.POHANG.toString())),
+                    Destination.of(DestinationName.INCHEON, descriptions.getDescription().get(DestinationName.INCHEON.toString())),
+                    Destination.of(DestinationName.DAEJEON, descriptions.getDescription().get(DestinationName.DAEJEON.toString()))
             );
 
             destinationRepository.saveAll(destinations);

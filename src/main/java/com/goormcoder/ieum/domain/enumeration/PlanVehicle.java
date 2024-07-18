@@ -1,4 +1,4 @@
-package com.goormcoder.ieum.domain;
+package com.goormcoder.ieum.domain.enumeration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

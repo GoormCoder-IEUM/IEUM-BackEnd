@@ -1,11 +1,11 @@
-package com.goormcoder.ieum.domain;
+package com.goormcoder.ieum.domain.enumeration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum DestinationType {
+public enum DestinationName {
 
     JEJU("제주", "JEJU"),
     BUSAN("부산", "BUSAN"),

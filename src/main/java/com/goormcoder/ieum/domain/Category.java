@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.domain;
 
+import com.goormcoder.ieum.domain.enumeration.CategoryType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

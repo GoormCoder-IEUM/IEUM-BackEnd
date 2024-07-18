@@ -17,8 +17,8 @@ public record DestinationFindDto(
         return destinations.stream()
                 .map(destination -> new DestinationFindDto(
                         destination.getId(),
-                        destination.getDestinationType().getKrName(),
-                        destination.getDestinationType().getEnName(),
+                        destination.getDestinationName().getKrName(),
+                        destination.getDestinationName().getEnName(),
                         destination.getDescription()
                 )).toList();
     }
