@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import main.java.com.goormcoder.ieum.domain.Accommodation;
+import main.java.com.goormcoder.ieum.domain.Place;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,6 +34,12 @@ public class Plan extends BaseEntity {
 
     @OneToMany(mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<PlanMember> planMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Accommodation> accommodations;
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Place> places;
 
     @Builder
     private Plan(String location, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
