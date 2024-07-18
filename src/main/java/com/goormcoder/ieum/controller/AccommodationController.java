@@ -1,7 +1,8 @@
-package main.java.com.goormcoder.ieum.controller;
+package com.goormcoder.ieum.controller;
 
-import main.java.com.goormcoder.ieum.domain.Accommodation;
-import main.java.com.goormcoder.ieum.service.AccommodationService;
+
+import com.goormcoder.ieum.domain.Accommodation;
+import com.goormcoder.ieum.service.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

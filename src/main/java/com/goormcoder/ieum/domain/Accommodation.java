@@ -1,5 +1,6 @@
-package main.java.com.goormcoder.ieum.domain;
+package com.goormcoder.ieum.domain;
 
+import com.goormcoder.ieum.domain.Plan;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -49,10 +50,14 @@ public class Accommodation {
         this.plan = plan;
         this.name = name;
         this.location = location;
-        this.stayDate = stayDate;
+        this.accomDay = accomDay;
     }
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+
+    public void setId(Long id) {
     }
 }

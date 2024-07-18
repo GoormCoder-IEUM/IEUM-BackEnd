@@ -1,9 +1,12 @@
-package main.java.com.goormcoder.ieum.service;
+package com.goormcoder.ieum.service;
 
-import main.java.com.goormcoder.ieum.domain.Accommodation;
-import main.java.com.goormcoder.ieum.domain.Plan;
-import main.java.com.goormcoder.ieum.repository.AccommodationRepository;
-import main.java.com.goormcoder.ieum.repository.PlanRepository;
+
+import com.goormcoder.ieum.domain.Accommodation;
+import com.goormcoder.ieum.domain.Plan;
+import com.goormcoder.ieum.repository.AccommodationRepository;
+import com.goormcoder.ieum.repository.PlanRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +39,7 @@ public class AccommodationService {
                 .plan(plan)
                 .name(accommodation.getName())
                 .location(accommodation.getLocation())
-                .stayDate(accommodation.getStayDate())
+                .stayDate(accommodation.getAccomDay())
                 .build();
         return accommodationRepository.save(accommodation);
     }

@@ -1,9 +1,12 @@
-package main.java.com.goormcoder.ieum.service;
+package com.goormcoder.ieum.service;
 
-import main.java.com.goormcoder.ieum.domain.Place;
-import main.java.com.goormcoder.ieum.domain.Plan;
-import main.java.com.goormcoder.ieum.repository.PlaceRepository;
-import main.java.com.goormcoder.ieum.repository.PlanRepository;
+
+import com.goormcoder.ieum.domain.Place;
+import com.goormcoder.ieum.domain.Plan;
+import com.goormcoder.ieum.repository.PlaceRepository;
+import com.goormcoder.ieum.repository.PlanRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
