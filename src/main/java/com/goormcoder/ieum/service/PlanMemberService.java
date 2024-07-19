@@ -39,6 +39,7 @@ public class PlanMemberService {
     @Transactional
     public InviteResultDto invitePlanMember(UUID memberId, Long planId, String[] memberLoginIds) {
         // TODO : 일정에 일정 이름 필드 추가검토 -> 초대목록에 이름, 여행지로 표시되게 (ex : 놀러가자(제주))
+        checkContainPlanMember(memberId, planId);
         Plan plan = findPlanByPlanId(planId);
 
         List<Member> members = Stream.of(memberLoginIds)
@@ -120,7 +121,6 @@ public class PlanMemberService {
     }
 
     private boolean checkDuplicateInvite(Member member, Long planId) {
-        //TODO : 조회가 여러개가 되서 유니크 에러 발생
         Optional<Invite> optionalInvite = inviteRepository.findByMemberIdAndPlanIdAndIsNull(member.getId(), planId);
         if (optionalInvite.isEmpty()) {
             return false;
