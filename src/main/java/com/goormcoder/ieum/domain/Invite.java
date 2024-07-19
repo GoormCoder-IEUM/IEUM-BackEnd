@@ -23,7 +23,7 @@ public class Invite extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
+    @Column
     private InviteAcceptance acceptance;
 
     @Builder
@@ -39,6 +39,10 @@ public class Invite extends BaseEntity {
                 .member(member)
                 .acceptance(acceptance)
                 .build();
+    }
+
+    public void setAcceptance(InviteAcceptance acceptance) {
+        this.acceptance = acceptance;
     }
 
 }
