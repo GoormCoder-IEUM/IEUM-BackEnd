@@ -5,9 +5,12 @@ import com.goormcoder.ieum.domain.MemberRole;
 import com.goormcoder.ieum.dto.request.MemberCreateDto;
 import com.goormcoder.ieum.dto.request.MemberUpdateDto;
 import com.goormcoder.ieum.dto.request.PasswordUpdateDto;
+import com.goormcoder.ieum.dto.response.MemberFindAllDto;
 import com.goormcoder.ieum.repository.MemberRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,10 @@ public class MemberService {
     public Member findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
                 .orElseThrow(EntityNotFoundException::new);
+    }
+
+    public List<MemberFindAllDto> getAllMembersByLoginIdContaining(String keyword, UUID memberId) {
+        return MemberFindAllDto.listOf(memberRepository.findAllByLoginIdContaining(keyword, memberId));
     }
 
     public Member findByLoginIdAndPassword(String loginId, String password) {

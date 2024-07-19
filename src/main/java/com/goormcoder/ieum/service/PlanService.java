@@ -1,13 +1,13 @@
 package com.goormcoder.ieum.service;
 
-import com.goormcoder.ieum.domain.Destination;
-import com.goormcoder.ieum.domain.Member;
-import com.goormcoder.ieum.domain.Plan;
-import com.goormcoder.ieum.domain.PlanMember;
+import com.goormcoder.ieum.domain.*;
+import com.goormcoder.ieum.domain.enumeration.InviteAcceptance;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
+import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.DestinationRepository;
+import com.goormcoder.ieum.repository.InviteRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,26 +39,6 @@ public class PlanService {
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
         planRepository.save(plan);
-    }
-
-    @Transactional
-    public void createPlanMember(Long planId, String[] memberLoginIds) {
-        Plan plan = findByPlanId(planId);
-
-        List<Member> members = Stream.of(memberLoginIds)
-                .map(memberService::findByLoginId)
-                .toList();
-
-        for(Member member : members) {
-            plan.addPlanMember(PlanMember.of(plan, member));
-        }
-
-        planRepository.save(plan);
-    }
-
-    private Plan findByPlanId(Long planId) {
-        return planRepository.findById(planId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MEMBER_NOT_FOUND.getMessage()));
     }
 
 }

@@ -1,9 +1,12 @@
 package com.goormcoder.ieum.controller;
 
 
+import com.goormcoder.ieum.domain.Invite;
+import com.goormcoder.ieum.domain.enumeration.InviteAcceptance;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.request.PlanMemberCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
+import com.goormcoder.ieum.service.PlanMemberService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,11 +42,6 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.OK).body("일정이 생성되었습니다.");
     }
 
-    @PostMapping("/{planId}/invite")
-    @Operation(summary = "멤버 추가", description = "일정 멤버를 추가합니다.")
-    public ResponseEntity<String> createPlan(@PathVariable Long planId, @RequestBody PlanMemberCreateDto planMemberCreateDto) {
-        planService.createPlanMember(planId, planMemberCreateDto.memberLoginIds());
-        return ResponseEntity.status(HttpStatus.OK).body("멤버가 추가되었습니다.");
-    }
+
 
 }
