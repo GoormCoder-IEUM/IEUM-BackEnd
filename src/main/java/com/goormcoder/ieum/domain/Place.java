@@ -1,24 +1,15 @@
 package com.goormcoder.ieum.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "t_place")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
-@EntityListeners(AuditingEntityListener.class)
-public class Place {
+public class Place extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,38 +20,59 @@ public class Place {
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
-    @Column(name = "place_order", nullable = false)
-    private int placeOrder;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
-    @Column(name = "place_day", nullable = false)
-    private LocalDate placeDay;
+    @Column
+    private LocalDateTime startedAt;
+
+    @Column
+    private LocalDateTime endedAt;
 
     @Column(name = "place_name", nullable = false)
     private String placeName;
 
     @Column(name = "place_location", nullable = false)
-    private String placeLocation;
+    private String address;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime activatedAt;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Builder
-    public Place(Plan plan, int placeOrder, LocalDate placeDay, String placeName, String placeLocation) {
+    private Place(Plan plan, Member member, LocalDateTime startedAt, LocalDateTime endedAt,
+                  String placeName, String address, Category category) {
         this.plan = plan;
-        this.placeOrder = placeOrder;
-        this.placeDay = placeDay;
+        this.member = member;
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
         this.placeName = placeName;
-        this.placeLocation = placeLocation;
+        this.address = address;
+        this.category = category;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+    public static Place of(Plan plan, Member member, LocalDateTime startedAt, LocalDateTime endedAt,
+                           String placeName, String address, Category category) {
+        return Place.builder()
+                .plan(plan)
+                .member(member)
+                .startedAt(startedAt)
+                .endedAt(endedAt)
+                .placeName(placeName)
+                .address(address)
+                .category(category)
+                .build();
     }
 
-    public void setId(Long id) {
+    public void marksActivatedAt() {
+        this.activatedAt = LocalDateTime.now();
     }
+
+    public boolean isActive() {
+        return this.activatedAt != null;
+    }
+
 }
