@@ -32,11 +32,6 @@ public class PlaceController {
         return place.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{planId}")
-    public Place createPlace(@PathVariable Long planId, @RequestBody Place place) {
-        return placeService.createPlace(planId, place);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<Place> updatePlace(@PathVariable Long id, @RequestBody Place updatedPlace) {
         return ResponseEntity.ok(placeService.updatePlace(id, updatedPlace));

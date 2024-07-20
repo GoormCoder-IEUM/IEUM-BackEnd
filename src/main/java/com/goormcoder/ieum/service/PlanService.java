@@ -40,5 +40,10 @@ public class PlanService {
         plan.addPlanMember(PlanMember.of(plan, member));
         planRepository.save(plan);
     }
+    
+    public Plan findByPlanId(Long planId) {
+        return planRepository.findById(planId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MEMBER_NOT_FOUND.getMessage()));
+    }
 
 }
