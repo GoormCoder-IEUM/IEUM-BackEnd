@@ -36,7 +36,9 @@ public class PlaceService {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(dto.planId());
         Category category = findByCategoryId(dto.categoryId());
-        Place place = placeRepository.save(Place.of(plan, member, null, null, dto.placeName(), dto.address(), category));
+        Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
+        plan.addPlace(place);
+        planRepository.save(plan);
     }
 
     @Transactional
@@ -44,9 +46,12 @@ public class PlaceService {
         // memberService.findById(memberId); - 검증 추가 예정
         Place place = findPlaceById(dto.placeId());
         place.marksActivatedAt();
-        Place savedPlace = placeRepository.save(place);
 
-        return PlaceFindDto.of(savedPlace);
+        Plan plan = planService.findByPlanId(dto.planId());
+        plan.addPlace(place);
+        planRepository.save(plan);
+
+        return PlaceFindDto.of(place);
     }
 
     public List<Place> findAllPlaces() {
