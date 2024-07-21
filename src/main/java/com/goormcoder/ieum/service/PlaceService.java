@@ -6,6 +6,8 @@ import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
+import com.goormcoder.ieum.dto.request.PlaceShareDto;
+import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,12 +39,18 @@ public class PlaceService {
         Place place = placeRepository.save(Place.of(plan, member, null, null, dto.placeName(), dto.address(), category));
     }
 
-    public List<Place> findAllPlaces() {
-        return placeRepository.findAll();
+    @Transactional
+    public PlaceFindDto sharePlace(PlaceShareDto dto) {
+        // memberService.findById(memberId); - 검증 추가 예정
+        Place place = findPlaceById(dto.placeId());
+        place.marksActivatedAt();
+        Place savedPlace = placeRepository.save(place);
+
+        return PlaceFindDto.of(savedPlace);
     }
 
-    public Optional<Place> findPlaceById(Long id) {
-        return placeRepository.findById(id);
+    public List<Place> findAllPlaces() {
+        return placeRepository.findAll();
     }
 
     public Place updatePlace(Long id, Place updatedPlace) {
@@ -66,5 +73,10 @@ public class PlaceService {
     private Category findByCategoryId(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.CATEGORY_NOT_FOUND.getMessage()));
+    }
+
+    private Place findPlaceById(Long placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
 }

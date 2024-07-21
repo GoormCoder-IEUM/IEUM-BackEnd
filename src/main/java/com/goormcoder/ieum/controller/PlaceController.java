@@ -28,8 +28,9 @@ public class PlaceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Place> getPlaceById(@PathVariable Long id) {
-        Optional<Place> place = placeService.findPlaceById(id);
-        return place.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+//        Optional<Place> place = placeService.findPlaceById(id);
+//        return place.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
