@@ -6,7 +6,6 @@ import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
-import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.service.PlaceService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;

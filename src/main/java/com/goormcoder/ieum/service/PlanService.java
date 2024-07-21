@@ -1,13 +1,13 @@
 package com.goormcoder.ieum.service;
 
-import com.goormcoder.ieum.domain.*;
-import com.goormcoder.ieum.domain.enumeration.InviteAcceptance;
+import com.goormcoder.ieum.domain.Destination;
+import com.goormcoder.ieum.domain.Member;
+import com.goormcoder.ieum.domain.Plan;
+import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
-import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.DestinationRepository;
-import com.goormcoder.ieum.repository.InviteRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
