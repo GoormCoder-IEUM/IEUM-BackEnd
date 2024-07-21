@@ -6,6 +6,7 @@ import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
+import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.service.PlaceService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +61,7 @@ public class PlanController {
     public void addPlace(@Payload PlaceShareDto placeShareDto) {
         // UUID memberId = getMemberId(); - 검증 추가 예정
         PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto);
-        messagingTemplate.convertAndSend("/sub/plans/" + placeFindDto.planId(), placeFindDto);
+        messagingTemplate.convertAndSend("/sub/plans/" + placeShareDto.planId(), placeFindDto);
     }
 
     private UUID getMemberId() {
