@@ -39,7 +39,7 @@ public class Plan extends BaseEntity {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Accommodation> accommodations;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Place> places;
 
     @Builder
@@ -61,6 +61,10 @@ public class Plan extends BaseEntity {
 
     public void addPlanMember(PlanMember planMember) {
         planMembers.add(planMember);
+    }
+
+    public void addPlace(Place place) {
+        places.add(place);
     }
 
 }
