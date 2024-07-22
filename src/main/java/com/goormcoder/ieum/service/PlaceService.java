@@ -8,6 +8,7 @@ import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
+import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
@@ -32,13 +33,15 @@ public class PlaceService {
     private final PlanService planService;
 
     @Transactional
-    public void createPlace(UUID memberId, PlaceCreateDto dto) {
+    public PlaceInfoDto createPlace(UUID memberId, PlaceCreateDto dto) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(dto.planId());
         Category category = findByCategoryId(dto.categoryId());
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
         plan.addPlace(place);
         planRepository.save(plan);
+
+        return PlaceInfoDto.of(findByPlaceNameAndMember(dto.placeName(), member));
     }
 
     @Transactional
@@ -84,4 +87,9 @@ public class PlaceService {
         return placeRepository.findById(placeId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
+
+    private Place findByPlaceNameAndMember(String placeName, Member member) {
+        return placeRepository.findByPlaceNameAndMember(placeName, member);
+    }
+
 }

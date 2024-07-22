@@ -6,6 +6,7 @@ import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
+import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
@@ -31,13 +32,15 @@ public class PlanService {
     }
 
     @Transactional
-    public void createPlan(PlanCreateDto dto, UUID memberId) {
+    public PlanInfoDto createPlan(PlanCreateDto dto, UUID memberId) {
         Member member = memberService.findById(memberId);
         Destination destination = destinationRepository.findById(dto.destinationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.DESTINATION_NOT_FOUND.getMessage()));
+
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
-        planRepository.save(plan);
+
+        return PlanInfoDto.of(planRepository.save(plan));
     }
     
     public Plan findByPlanId(Long planId) {
