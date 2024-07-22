@@ -44,7 +44,7 @@ public class PlaceService {
         plan.addPlace(place);
         planRepository.save(plan);
 
-        return PlaceInfoDto.of(findByPlaceNameAndMember(dto.placeName(), member));
+        return PlaceInfoDto.of(findByPlaceNameAndMember(dto.placeName(), member, plan));
     }
 
     @Transactional
@@ -91,12 +91,12 @@ public class PlaceService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
 
-    private Place findByPlaceNameAndMember(String placeName, Member member) {
-        return placeRepository.findByPlaceNameAndMember(placeName, member);
+    private Place findByPlaceNameAndMember(String placeName, Member member, Plan plan) {
+        return placeRepository.findByPlaceNameAndMemberAndPlan(placeName, member, plan);
     }
 
     private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
-        if(placeRepository.existsByPlaceNameAndMember(placeName, member)) {
+        if(placeRepository.existsByPlaceNameAndMemberAndPlan(placeName, member, plan)) {
             throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
         }
     }
