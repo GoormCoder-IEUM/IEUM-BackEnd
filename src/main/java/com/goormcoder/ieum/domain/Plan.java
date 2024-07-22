@@ -42,6 +42,9 @@ public class Plan extends BaseEntity {
     @OneToMany(mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Place> places;
 
+    @OneToMany(mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Chat> messages = new ArrayList<>();
+
     @Builder
     private Plan(Destination destination, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
         this.destination = destination;
@@ -66,5 +69,7 @@ public class Plan extends BaseEntity {
     public void addPlace(Place place) {
         places.add(place);
     }
+
+    public void addMessage(Chat chat) { messages.add(chat); }
 
 }

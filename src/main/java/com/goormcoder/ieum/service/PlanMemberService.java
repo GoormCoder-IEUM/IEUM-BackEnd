@@ -139,7 +139,7 @@ public class PlanMemberService {
         return invite;
     }
 
-    private void checkContainPlanMember(UUID memberId, Long planId) {
+    public void checkContainPlanMember(UUID memberId, Long planId) {
         planMemberRepository.findByMemberIdAndPlanIdOrThrow(memberId, planId);
     }
 
