@@ -8,6 +8,8 @@ import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
+import com.goormcoder.ieum.dto.response.PlaceInfoDto;
+import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
@@ -32,13 +34,17 @@ public class PlaceService {
     private final PlanService planService;
 
     @Transactional
-    public void createPlace(UUID memberId, PlaceCreateDto dto) {
+    public PlaceInfoDto createPlace(Long planId, UUID memberId, PlaceCreateDto dto) {
         Member member = memberService.findById(memberId);
-        Plan plan = planService.findByPlanId(dto.planId());
+        Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
+        validateDuplicatePlace(plan, member, dto.placeName());
+
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
         plan.addPlace(place);
         planRepository.save(plan);
+
+        return PlaceInfoDto.of(findByPlaceNameAndMember(dto.placeName(), member, plan));
     }
 
     @Transactional
@@ -84,4 +90,15 @@ public class PlaceService {
         return placeRepository.findById(placeId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
+
+    private Place findByPlaceNameAndMember(String placeName, Member member, Plan plan) {
+        return placeRepository.findByPlaceNameAndMemberAndPlan(placeName, member, plan);
+    }
+
+    private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
+        if(placeRepository.existsByPlaceNameAndMemberAndPlan(placeName, member, plan)) {
+            throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
+        }
+    }
+
 }
