@@ -34,9 +34,9 @@ public class PlaceService {
     private final PlanService planService;
 
     @Transactional
-    public PlaceInfoDto createPlace(UUID memberId, PlaceCreateDto dto) {
+    public PlaceInfoDto createPlace(Long planId, UUID memberId, PlaceCreateDto dto) {
         Member member = memberService.findById(memberId);
-        Plan plan = planService.findByPlanId(dto.planId());
+        Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
         validateDuplicatePlace(plan, member, dto.placeName());
 
