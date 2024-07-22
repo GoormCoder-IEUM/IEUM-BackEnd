@@ -9,6 +9,7 @@ import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
+import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
@@ -37,6 +38,8 @@ public class PlaceService {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(dto.planId());
         Category category = findByCategoryId(dto.categoryId());
+        validateDuplicatePlace(plan, member, dto.placeName());
+
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
         plan.addPlace(place);
         planRepository.save(plan);
@@ -90,6 +93,12 @@ public class PlaceService {
 
     private Place findByPlaceNameAndMember(String placeName, Member member) {
         return placeRepository.findByPlaceNameAndMember(placeName, member);
+    }
+
+    private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
+        if(placeRepository.existsByPlaceNameAndMember(placeName, member)) {
+            throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
+        }
     }
 
 }

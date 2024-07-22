@@ -10,4 +10,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Place findByPlaceNameAndMember(String placeName, Member member);
 
+    Boolean existsByPlaceNameAndMember(String placeName, Member member);
+
 }
