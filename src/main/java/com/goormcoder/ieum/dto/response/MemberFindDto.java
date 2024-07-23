@@ -2,6 +2,7 @@ package com.goormcoder.ieum.dto.response;
 
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.MemberRole;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public record MemberFindDto(
         String name,
         MemberRole role,
         String gender,
-        LocalDateTime birth,
+        LocalDate birth,
 
         String loginId,
         String oauthType,

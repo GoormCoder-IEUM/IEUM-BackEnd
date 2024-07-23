@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class Member implements UserDetails {
     private String name;
     private MemberRole role;
     private String gender;
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     private String loginId;
     private String password;
@@ -46,7 +47,7 @@ public class Member implements UserDetails {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Member(String name, MemberRole role, String gender, LocalDateTime birth, String loginId, String password, String oauthType, String oauthId) {
+    public Member(String name, MemberRole role, String gender, LocalDate birth, String loginId, String password, String oauthType, String oauthId) {
         this.name = name;
         this.role = role;
         this.gender = gender;
@@ -65,7 +66,7 @@ public class Member implements UserDetails {
         this.gender = gender;
     }
 
-    public void setBirth(LocalDateTime birth) {
+    public void setBirth(LocalDate birth) {
         this.birth = birth;
     }
 
