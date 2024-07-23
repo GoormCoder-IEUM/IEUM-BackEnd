@@ -17,4 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
 
     List<Member> findAllByLoginIdContainingAndIdIsNot(String loginId, UUID memberId);
 
+    Optional<Member> findByOauthTypeAndOauthId(String oauthType, String oauthId);
+
 }
