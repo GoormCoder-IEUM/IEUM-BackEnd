@@ -1,17 +1,17 @@
 package com.goormcoder.ieum.dto.response;
 
-import com.goormcoder.ieum.domain.Invite;
 import com.goormcoder.ieum.domain.Member;
 
 import java.util.List;
+import java.util.UUID;
 
 public record MemberSummaryDto(
-        String loginId,
+        UUID id,
         String name
 ) {
     public static MemberSummaryDto of(Member member) {
         return new MemberSummaryDto(
-                member.getLoginId(),
+                member.getId(),
                 member.getName()
         );
     }
@@ -19,9 +19,7 @@ public record MemberSummaryDto(
     public static List<MemberSummaryDto> listOf(List<Member> members){
         return members
                 .stream()
-                .map(member -> new MemberSummaryDto(
-                        member.getLoginId(),
-                        member.getName()
-                )).toList();
+                .map(MemberSummaryDto::of)
+                .toList();
     }
 }
