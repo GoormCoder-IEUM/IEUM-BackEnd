@@ -1,11 +1,12 @@
 package com.goormcoder.ieum.dto.request;
 
-import java.time.LocalDateTime;
+import com.goormcoder.ieum.domain.enumeration.Gender;
+import java.time.LocalDate;
 
 public record MemberCreateDto(
         String name,
-        String gender,
-        LocalDateTime birth,
+        Gender gender,
+        LocalDate birth,
         String loginId,
         String password
 ) {

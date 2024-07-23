@@ -34,11 +34,11 @@ public class MemberController {
         return ResponseEntity.ok(MemberFindDto.of(member));
     }
 
-    @Operation(summary = "회원 검색", description = "검색 키워드로 회원을 검색합니다.")
+    @Operation(summary = "회원 검색", description = "검색 키워드로 회원을 검색합니다. (본인 제외)")
     @GetMapping("/search/{keyword}")
     public ResponseEntity<List<MemberFindAllDto>> getMember(@PathVariable String keyword) {
         UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembersByLoginIdContaining(keyword, memberId));
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembersByLoginIdContainingAndIdIsNot(keyword, memberId));
     }
 
 }

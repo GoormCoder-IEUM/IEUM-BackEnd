@@ -6,6 +6,7 @@ import com.goormcoder.ieum.dto.request.MemberCreateDto;
 import com.goormcoder.ieum.dto.request.MemberUpdateDto;
 import com.goormcoder.ieum.dto.request.PasswordUpdateDto;
 import com.goormcoder.ieum.dto.response.MemberFindAllDto;
+import com.goormcoder.ieum.dto.response.OAuthUserInfoDto;
 import com.goormcoder.ieum.repository.MemberRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,8 +38,42 @@ public class MemberService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    public List<MemberFindAllDto> getAllMembersByLoginIdContaining(String keyword, UUID memberId) {
-        return MemberFindAllDto.listOf(memberRepository.findAllByLoginIdContaining(keyword, memberId));
+    @Transactional
+    public Member createOrFindByOAuthUserInfo(OAuthUserInfoDto oAuthUserInfoDto) {
+        try {
+            return this.findByOAuthUserInfo(oAuthUserInfoDto);
+        }
+        catch (EntityNotFoundException e) {
+            return this.createByOAuthUserInfo(oAuthUserInfoDto);
+        }
+    }
+
+    private Member createByOAuthUserInfo(OAuthUserInfoDto oAuthUserInfoDto) {
+        Member member = Member.builder()
+                .oauthType(oAuthUserInfoDto.registrationId())
+                .oauthId(oAuthUserInfoDto.id())
+                .name(oAuthUserInfoDto.name())
+                .role(MemberRole.USER)
+                .gender(oAuthUserInfoDto.gender())
+                .birth(oAuthUserInfoDto.birth())
+                .loginId(null)
+                .password(null)
+                .build();
+        memberRepository.save(member);
+        return member;
+    }
+
+    private Member findByOAuthUserInfo(OAuthUserInfoDto oAuthUserInfoDto) {
+        return memberRepository
+                .findByOauthTypeAndOauthId(
+                        oAuthUserInfoDto.registrationId(),
+                        oAuthUserInfoDto.id()
+                )
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    public List<MemberFindAllDto> getAllMembersByLoginIdContainingAndIdIsNot(String keyword, UUID memberId) {
+        return MemberFindAllDto.listOf(memberRepository.findAllByLoginIdContainingAndIdIsNot(keyword, memberId));
     }
 
     public Member findByLoginIdAndPassword(String loginId, String password) {

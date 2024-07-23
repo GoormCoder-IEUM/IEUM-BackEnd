@@ -3,9 +3,10 @@ package com.goormcoder.ieum.dto.response;
 import com.goormcoder.ieum.domain.Member;
 
 import java.util.List;
+import java.util.UUID;
 
 public record MemberFindAllDto(
-        String loginId,
+        UUID id,
         String name
 ) {
 
@@ -13,7 +14,7 @@ public record MemberFindAllDto(
         return members
                 .stream()
                 .map(member -> new MemberFindAllDto(
-                        member.getLoginId(),
+                        member.getId(),
                         member.getName()
                 )).toList();
     }
