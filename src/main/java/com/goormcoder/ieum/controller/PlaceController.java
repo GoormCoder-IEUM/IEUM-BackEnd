@@ -4,6 +4,7 @@ package com.goormcoder.ieum.controller;
 import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
+import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.service.PlaceService;
@@ -16,6 +17,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +45,15 @@ public class PlaceController {
     public ResponseEntity<PlaceInfoDto> createPlace(@PathVariable Long planId, @RequestBody PlaceCreateDto placeCreateDto) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, memberId, placeCreateDto));
+    }
+
+    @PatchMapping("/{placeId}")
+    @Operation(summary = "장소 방문일시 설정", description = "공유한 장소의 방문일시를 설정합니다.")
+    public ResponseEntity<String> updateVisitTime(
+            @PathVariable Long planId, @PathVariable Long placeId, @RequestBody PlaceVisitTimeUpdateDto placeVisitTimeUpdateDto) {
+        UUID memberId = getMemberId();
+        placeService.updateVisitTime(planId, placeId, memberId, placeVisitTimeUpdateDto);
+        return ResponseEntity.status(HttpStatus.OK).body("방문일시가 설정되었습니다.");
     }
 
     private UUID getMemberId() {

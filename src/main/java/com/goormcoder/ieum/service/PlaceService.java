@@ -1,12 +1,10 @@
 package com.goormcoder.ieum.service;
 
 
-import com.goormcoder.ieum.domain.Category;
-import com.goormcoder.ieum.domain.Member;
-import com.goormcoder.ieum.domain.Place;
-import com.goormcoder.ieum.domain.Plan;
+import com.goormcoder.ieum.domain.*;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
+import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.exception.ConflictException;
@@ -18,7 +16,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +60,23 @@ public class PlaceService {
         return PlaceFindDto.of(place);
     }
 
+    @Transactional
+    public void updateVisitTime(Long planId, Long placeId, UUID memberId, PlaceVisitTimeUpdateDto dto) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        validatePlanMember(plan, member);
+        validatePlaceVisitTimeUpdateDto(dto, plan);
+
+        Place place = findPlaceById(placeId);
+        if(!place.isActive()) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_NOT_ACTIVE.getMessage());
+        }
+
+        place.marksStartedAt(dto.startedAt());
+        place.marksEndedAt(dto.endedAt());
+        placeRepository.save(place);
+    }
+
     public List<Place> findAllPlaces() {
         return placeRepository.findAll();
     }
@@ -98,6 +115,19 @@ public class PlaceService {
     private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
         if(placeRepository.existsByPlaceNameAndMemberAndPlan(placeName, member, plan)) {
             throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
+        }
+    }
+
+    private void validatePlanMember(Plan plan, Member member) {
+        plan.getPlanMembers().stream()
+                .filter(planMember -> planMember.getMember().equals(member))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    private void validatePlaceVisitTimeUpdateDto(PlaceVisitTimeUpdateDto dto, Plan plan) {
+        if(dto.startedAt().isBefore(plan.getStartedAt()) || dto.endedAt().isAfter(plan.getEndedAt())) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_TIME.getMessage());
         }
     }
 
