@@ -7,6 +7,7 @@ import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
+import com.goormcoder.ieum.dto.response.PlanSortDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
@@ -46,6 +47,18 @@ public class PlanService {
     public Plan findByPlanId(Long planId) {
         return planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_NOT_FOUND.getMessage()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> getAllPlansSortedByStartDate() {
+        List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc();
+        return PlanSortDto.listOf(plans);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> getPlansByDestinationSortedByStartDate(String destinationName) {
+        List<Plan> plans = planRepository.findByDestinationNameOrderByStartedAtDesc(destinationName);
+        return PlanSortDto.listOf(plans);
     }
 
 }
