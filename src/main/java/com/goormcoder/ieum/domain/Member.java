@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.domain;
 
+import com.goormcoder.ieum.domain.enumeration.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -33,7 +34,7 @@ public class Member implements UserDetails {
 
     private String name;
     private MemberRole role;
-    private String gender;
+    private Gender gender;
     private LocalDate birth;
 
     private String loginId;
@@ -47,7 +48,7 @@ public class Member implements UserDetails {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Member(String name, MemberRole role, String gender, LocalDate birth, String loginId, String password, String oauthType, String oauthId) {
+    public Member(String name, MemberRole role, Gender gender, LocalDate birth, String loginId, String password, String oauthType, String oauthId) {
         this.name = name;
         this.role = role;
         this.gender = gender;
@@ -62,7 +63,7 @@ public class Member implements UserDetails {
         this.name = name;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
