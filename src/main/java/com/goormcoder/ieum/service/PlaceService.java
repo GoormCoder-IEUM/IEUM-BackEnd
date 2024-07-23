@@ -38,6 +38,8 @@ public class PlaceService {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
+
+        validatePlanMember(plan, member);
         validateDuplicatePlace(plan, member, dto.placeName());
 
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
@@ -50,6 +52,7 @@ public class PlaceService {
     @Transactional
     public PlaceFindDto sharePlace(PlaceShareDto dto) {
         // memberService.findById(memberId); - 검증 추가 예정
+        // validatePlanMember(plan, member);
         Place place = findPlaceById(dto.placeId());
         place.marksActivatedAt();
 
