@@ -1,6 +1,7 @@
 package com.goormcoder.ieum.controller;
 
 
+import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
@@ -43,7 +44,7 @@ public class PlanController {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "전체 일정 조회", description = "모든 여행 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> getAllPlans() {
         List<PlanSortDto> plans = planService.getAllPlans();
@@ -59,7 +60,7 @@ public class PlanController {
 
     @GetMapping("/sorted/{destinationName}")
     @Operation(summary = "지역별 일정 조회", description = "특정 지역의 일정을 최신순으로 정렬하여 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationSortedByStartDate(@PathVariable String destinationName) {
+    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationSortedByStartDate(@PathVariable DestinationName destinationName) {
         List<PlanSortDto> plans = planService.getPlansByDestinationSortedByStartDate(destinationName);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
