@@ -116,16 +116,16 @@ public class PlaceService {
     }
 
     private Place findPlaceById(Long placeId) {
-        return placeRepository.findById(placeId)
+        return placeRepository.findByIdAndDeletedAtIsNull(placeId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
 
     private Place findByPlaceNameAndMember(String placeName, Member member, Plan plan) {
-        return placeRepository.findByPlaceNameAndMemberAndPlan(placeName, member, plan);
+        return placeRepository.findByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(placeName, member, plan);
     }
 
     private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
-        if(placeRepository.existsByPlaceNameAndMemberAndPlan(placeName, member, plan)) {
+        if(placeRepository.existsByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(placeName, member, plan)) {
             throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
         }
     }
