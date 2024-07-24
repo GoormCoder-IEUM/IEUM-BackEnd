@@ -4,6 +4,7 @@ package com.goormcoder.ieum.controller;
 import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
+import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.service.PlaceService;
@@ -45,6 +46,23 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, memberId, placeCreateDto));
     }
 
+    @DeleteMapping("/{placeId}")
+    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다. ")
+    public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {
+        UUID memberId = getMemberId();
+        placeService.deletePlace(planId, placeId, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body("장소가 삭제되었습니다.");
+    }
+
+    @PatchMapping("/{placeId}")
+    @Operation(summary = "장소 방문일시 설정", description = "공유한 장소의 방문일시를 설정합니다.")
+    public ResponseEntity<String> updateVisitTime(
+            @PathVariable Long planId, @PathVariable Long placeId, @RequestBody PlaceVisitTimeUpdateDto placeVisitTimeUpdateDto) {
+        UUID memberId = getMemberId();
+        placeService.updateVisitTime(planId, placeId, memberId, placeVisitTimeUpdateDto);
+        return ResponseEntity.status(HttpStatus.OK).body("방문일시가 설정되었습니다.");
+    }
+
     private UUID getMemberId() {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
@@ -66,9 +84,4 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.updatePlace(id, updatedPlace));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlace(@PathVariable Long planId, @PathVariable Long id) {
-        placeService.deletePlace(id);
-        return ResponseEntity.noContent().build();
-    }
 }

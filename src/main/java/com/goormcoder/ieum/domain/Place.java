@@ -75,4 +75,12 @@ public class Place extends BaseEntity {
         return this.activatedAt != null;
     }
 
+    public void marksStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public void marksEndedAt(LocalDateTime endedAt) {
+        this.endedAt = endedAt;
+    }
+
 }
