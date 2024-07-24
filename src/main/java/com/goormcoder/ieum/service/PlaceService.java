@@ -9,11 +9,13 @@ import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
+import com.goormcoder.ieum.exception.ForbiddenException;
 import com.goormcoder.ieum.repository.CategoryRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -64,6 +66,17 @@ public class PlaceService {
     }
 
     @Transactional
+    public void deletePlace(Long planId, Long placeId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        validatePlanMember(plan, member);
+
+        Place place = findPlaceById(placeId);
+        handleUnActivePlace(place, member);
+        place.markAsDeleted();
+    }
+
+    @Transactional
     public void updateVisitTime(Long planId, Long placeId, UUID memberId, PlaceVisitTimeUpdateDto dto) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
@@ -97,10 +110,6 @@ public class PlaceService {
 //                });
     }
 
-    public void deletePlace(Long id) {
-        placeRepository.deleteById(id);
-    }
-
     private Category findByCategoryId(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.CATEGORY_NOT_FOUND.getMessage()));
@@ -131,6 +140,14 @@ public class PlaceService {
     private void validatePlaceVisitTimeUpdateDto(PlaceVisitTimeUpdateDto dto, Plan plan) {
         if(dto.startedAt().isBefore(plan.getStartedAt()) || dto.endedAt().isAfter(plan.getEndedAt())) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_TIME.getMessage());
+        }
+    }
+
+    private void handleUnActivePlace(Place place, Member member) {
+        if(!place.isActive()) {
+            if(!place.getMember().equals(member)) {
+                throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
+            }
         }
     }
 

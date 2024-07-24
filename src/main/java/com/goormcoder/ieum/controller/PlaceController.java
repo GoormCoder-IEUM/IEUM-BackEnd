@@ -17,7 +17,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +44,14 @@ public class PlaceController {
     public ResponseEntity<PlaceInfoDto> createPlace(@PathVariable Long planId, @RequestBody PlaceCreateDto placeCreateDto) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, memberId, placeCreateDto));
+    }
+
+    @DeleteMapping("/{placeId}")
+    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다. ")
+    public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {
+        UUID memberId = getMemberId();
+        placeService.deletePlace(planId, placeId, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body("장소가 삭제되었습니다.");
     }
 
     @PatchMapping("/{placeId}")
@@ -77,9 +84,4 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.updatePlace(id, updatedPlace));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlace(@PathVariable Long planId, @PathVariable Long id) {
-        placeService.deletePlace(id);
-        return ResponseEntity.noContent().build();
-    }
 }
