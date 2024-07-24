@@ -4,9 +4,11 @@ import com.goormcoder.ieum.domain.Destination;
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.domain.PlanMember;
+import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
+import com.goormcoder.ieum.dto.response.PlanSortDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
@@ -42,10 +44,27 @@ public class PlanService {
 
         return PlanInfoDto.of(planRepository.save(plan));
     }
-    
+
     public Plan findByPlanId(Long planId) {
         return planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_NOT_FOUND.getMessage()));
     }
 
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> getAllPlans() {
+        List<Plan> plans = planRepository.findAll();
+        return PlanSortDto.listOf(plans);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> getAllPlansSortedByStartDate() {
+        List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc();
+        return PlanSortDto.listOf(plans);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> getPlansByDestinationSortedByStartDate(DestinationName destinationName) {
+        List<Plan> plans = planRepository.findByDestinationDestinationNameOrderByStartedAtDesc(destinationName);
+        return PlanSortDto.listOf(plans);
+    }
 }
