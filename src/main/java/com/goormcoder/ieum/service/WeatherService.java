@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WeatherService {
 
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = "c61293364315a17179a89213e2995218";
     private static final String WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&cnt=30&appid=%s&units=metric";
 
     private final WeatherDataRepository weatherDataRepository;
