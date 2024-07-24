@@ -1,6 +1,7 @@
 package com.goormcoder.ieum.repository;
 
 import com.goormcoder.ieum.domain.Plan;
+import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,13 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
-
     List<Plan> findAllByOrderByStartedAtDesc();
-
-    // 특정 지역의 일정을 조회하는 메서드
-    List<Plan> findByDestinationNameOrderByStartedAtDesc(String destinationName);
-
-    List<Plan> findByDestinationNameAndDateBetween(String destinationName, LocalDateTime startDate, LocalDateTime endDate);
-
-
+    List<Plan> findByDestinationDestinationNameOrderByStartedAtDesc(DestinationName destinationName);
+    List<Plan> findByDestinationDestinationNameAndStartedAtBetween(DestinationName destinationName, LocalDateTime start, LocalDateTime end);
 }
