@@ -50,6 +50,12 @@ public class PlanService {
     }
 
     @Transactional(readOnly = true)
+    public List<PlanSortDto> getAllPlans() {
+        List<Plan> plans = planRepository.findAll();
+        return PlanSortDto.listOf(plans);
+    }
+
+    @Transactional(readOnly = true)
     public List<PlanSortDto> getAllPlansSortedByStartDate() {
         List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc();
         return PlanSortDto.listOf(plans);
@@ -60,5 +66,6 @@ public class PlanService {
         List<Plan> plans = planRepository.findByDestinationNameOrderByStartedAtDesc(destinationName);
         return PlanSortDto.listOf(plans);
     }
+
 
 }
