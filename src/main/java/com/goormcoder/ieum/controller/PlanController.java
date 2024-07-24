@@ -43,6 +43,13 @@ public class PlanController {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
 
+    @GetMapping
+    @Operation(summary = "전체 일정 조회", description = "모든 여행 일정을 조회합니다.")
+    public ResponseEntity<List<PlanSortDto>> getAllPlans() {
+        List<PlanSortDto> plans = planService.getAllPlans();
+        return ResponseEntity.status(HttpStatus.OK).body(plans);
+    }
+
     @GetMapping("/sorted")
     @Operation(summary = "최신순으로 일정 조회", description = "최신순으로 정렬된 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> getAllPlansSortedByStartDate() {
