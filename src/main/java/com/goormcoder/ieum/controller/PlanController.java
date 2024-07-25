@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.controller;
 
-
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +29,8 @@ public class PlanController {
 
     @GetMapping
     @Operation(summary = "여행지 목록 조회", description = "여행지 목록을 조회합니다.")
-    public ResponseEntity<List<DestinationFindDto>> getAllDestination() {
-        return ResponseEntity.status(HttpStatus.OK).body(planService.getAllDestination());
+    public ResponseEntity<List<DestinationFindDto>> getAllDestinations() {
+        return ResponseEntity.status(HttpStatus.OK).body(planService.getAllDestinations());
     }
 
     @PostMapping
@@ -46,23 +46,29 @@ public class PlanController {
 
     @GetMapping("/all")
     @Operation(summary = "전체 일정 조회", description = "모든 여행 일정을 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> getAllPlans() {
-        List<PlanSortDto> plans = planService.getAllPlans();
+    public ResponseEntity<List<PlanSortDto>> listAllPlans() {
+        List<PlanSortDto> plans = planService.listAllPlans();
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted")
     @Operation(summary = "최신순으로 일정 조회", description = "최신순으로 정렬된 일정을 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> getAllPlansSortedByStartDate() {
-        List<PlanSortDto> plans = planService.getAllPlansSortedByStartDate();
+    public ResponseEntity<List<PlanSortDto>> listPlansByStartDate() {
+        List<PlanSortDto> plans = planService.listPlansByStartDate();
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted/{destinationName}")
     @Operation(summary = "지역별 일정 조회", description = "특정 지역의 일정을 최신순으로 정렬하여 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationSortedByStartDate(@PathVariable DestinationName destinationName) {
-        List<PlanSortDto> plans = planService.getPlansByDestinationSortedByStartDate(destinationName);
+    public ResponseEntity<List<PlanSortDto>> listPlansByDestination(@PathVariable DestinationName destinationName) {
+        List<PlanSortDto> plans = planService.listPlansByDestination(destinationName);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
+    @GetMapping("/sorted/{destinationName}/{start}/{end}")
+    @Operation(summary = "특정 기간 동안의 지역별 일정 조회", description = "특정 기간 동안 특정 지역의 일정을 조회합니다.")
+    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
+        List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(destinationName, start, end);
+        return ResponseEntity.status(HttpStatus.OK).body(plans);
+    }
 }

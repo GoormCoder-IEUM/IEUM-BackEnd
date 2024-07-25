@@ -10,7 +10,13 @@ import java.util.List;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
+
+    // 최신순으로 모든 일정 조회
     List<Plan> findAllByOrderByStartedAtDesc();
-    List<Plan> findByDestinationDestinationNameOrderByStartedAtDesc(DestinationName destinationName);
-    List<Plan> findByDestinationDestinationNameAndStartedAtBetween(DestinationName destinationName, LocalDateTime start, LocalDateTime end);
+
+    // 지역별 최신순 일정 조회
+    List<Plan> findByDestination_DestinationNameOrderByStartedAtDesc(DestinationName destinationName);
+
+    // 지역별 일정 조회 (날짜 범위 포함)
+    List<Plan> findByDestination_DestinationNameAndStartedAtBetween(DestinationName destinationName, LocalDateTime start, LocalDateTime end);
 }
