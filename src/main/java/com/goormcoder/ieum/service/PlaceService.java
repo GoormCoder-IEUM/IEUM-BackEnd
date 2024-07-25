@@ -171,8 +171,16 @@ public class PlaceService {
     }
 
     private void validatePlaceVisitTimeUpdateDto(PlaceVisitTimeUpdateDto dto, Plan plan) {
-        if(dto.startedAt().isBefore(plan.getStartedAt()) || dto.endedAt().isAfter(plan.getEndedAt())) {
+        LocalDateTime start = dto.startedAt();
+        LocalDateTime end = dto.endedAt();
+
+        if(start.isBefore(plan.getStartedAt()) || start.isAfter(plan.getEndedAt())
+                || end.isBefore(plan.getStartedAt()) || end.isAfter(plan.getEndedAt())) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_TIME.getMessage());
+        }
+
+        if(start.isAfter(end) || start.isEqual(end)) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_START_TIME.getMessage());
         }
     }
 
