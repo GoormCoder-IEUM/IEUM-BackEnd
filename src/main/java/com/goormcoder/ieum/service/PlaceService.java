@@ -66,6 +66,18 @@ public class PlaceService {
     }
 
     @Transactional
+    public PlaceFindDto getPlace(Long planId, Long placeId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        Place place = findPlaceById(placeId);
+        handleUnActivePlace(place, member);
+
+        return PlaceFindDto.of(place);
+    }
+
+    @Transactional
     public void deletePlace(Long planId, Long placeId, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);

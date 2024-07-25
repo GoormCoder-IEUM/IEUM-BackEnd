@@ -46,8 +46,15 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, memberId, placeCreateDto));
     }
 
+    @GetMapping("/{placeId}")
+    @Operation(summary = "장소 조회", description = "장소를 조회합니다.")
+    public ResponseEntity<PlaceFindDto> getPlace(@PathVariable Long planId, @PathVariable Long placeId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getPlace(planId, placeId, memberId));
+    }
+
     @DeleteMapping("/{placeId}")
-    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다. ")
+    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다.")
     public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {
         UUID memberId = getMemberId();
         placeService.deletePlace(planId, placeId, memberId);
@@ -70,13 +77,6 @@ public class PlaceController {
     @GetMapping
     public List<Place> getAllPlaces(@PathVariable Long planId) {
         return placeService.findAllPlaces();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Place> getPlaceById(@PathVariable Long planId, @PathVariable Long id) {
-//        Optional<Place> place = placeService.findPlaceById(id);
-//        return place.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

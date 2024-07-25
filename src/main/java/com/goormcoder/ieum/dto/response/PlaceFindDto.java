@@ -9,13 +9,8 @@ public record PlaceFindDto(
 
         String placeName,
         String address,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
         LocalDateTime startedAt,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
         LocalDateTime endedAt,
-
         Long categoryId,
         String memberLoginId
 
