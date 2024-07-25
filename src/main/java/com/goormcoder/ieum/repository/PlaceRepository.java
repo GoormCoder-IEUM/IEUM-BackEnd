@@ -20,4 +20,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findByMemberAndPlanAndActivatedAtIsNullAndDeletedAtIsNull(Member member, Plan plan);
 
+    List<Place> findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan);
+
 }

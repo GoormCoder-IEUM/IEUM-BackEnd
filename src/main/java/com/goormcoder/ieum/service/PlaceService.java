@@ -64,7 +64,7 @@ public class PlaceService {
         return PlaceFindDto.of(place);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PlaceFindDto getPlace(Long planId, Long placeId, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
@@ -76,13 +76,22 @@ public class PlaceService {
         return PlaceFindDto.of(place);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PlaceFindDto> getAllPlaces(Long planId, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
         return PlaceFindDto.listOf(placeRepository.findByMemberAndPlanAndActivatedAtIsNullAndDeletedAtIsNull(member, plan));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceFindDto> getSharedPlaces(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        return PlaceFindDto.listOf(placeRepository.findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(plan));
     }
 
     @Transactional
