@@ -1,6 +1,9 @@
 package com.goormcoder.ieum.service;
 
-import com.goormcoder.ieum.domain.*;
+import com.goormcoder.ieum.domain.Category;
+import com.goormcoder.ieum.domain.Member;
+import com.goormcoder.ieum.domain.Place;
+import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
@@ -14,10 +17,8 @@ import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -131,10 +132,6 @@ public class PlaceService {
         place.marksStartedAt(dto.startedAt());
         place.marksEndedAt(dto.endedAt());
         placeRepository.save(place);
-    }
-
-    public List<Place> findAllPlaces() {
-        return placeRepository.findAll();
     }
 
     public Place updatePlace(Long id, Place updatedPlace) {

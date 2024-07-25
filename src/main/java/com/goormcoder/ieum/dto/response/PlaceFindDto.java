@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.goormcoder.ieum.domain.Place;
 
 import java.time.LocalDateTime;
