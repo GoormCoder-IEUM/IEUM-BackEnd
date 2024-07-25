@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.service;
 
-
 import com.goormcoder.ieum.domain.*;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
@@ -75,6 +74,15 @@ public class PlaceService {
         handleUnActivePlace(place, member);
 
         return PlaceFindDto.of(place);
+    }
+
+    @Transactional
+    public List<PlaceFindDto> getAllPlaces(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        return PlaceFindDto.listOf(placeRepository.findByMemberAndPlanAndActivatedAtIsNullAndDeletedAtIsNull(member, plan));
     }
 
     @Transactional

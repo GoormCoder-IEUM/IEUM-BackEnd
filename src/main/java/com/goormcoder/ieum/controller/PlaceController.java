@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.controller;
 
-
 import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
@@ -53,6 +52,13 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getPlace(planId, placeId, memberId));
     }
 
+    @GetMapping()
+    @Operation(summary = "장소 전체 조회", description = "사용자별 장소를 전체 조회합니다. 사용자가 공유한 장소는 조회되지 않습니다.")
+    public ResponseEntity<List<PlaceFindDto>> getAllPlaces(@PathVariable Long planId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getAllPlaces(planId, memberId));
+    }
+
     @DeleteMapping("/{placeId}")
     @Operation(summary = "장소 삭제", description = "장소를 삭제합니다.")
     public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {
@@ -72,11 +78,6 @@ public class PlaceController {
 
     private UUID getMemberId() {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-    }
-
-    @GetMapping
-    public List<Place> getAllPlaces(@PathVariable Long planId) {
-        return placeService.findAllPlaces();
     }
 
     @PutMapping("/{id}")
