@@ -66,6 +66,13 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getSharedPlaces(planId, memberId));
     }
 
+    @GetMapping("/shared/{day}")
+    @Operation(summary = "공유 장소 일차별 조회", description = "해당 일차에 방문 예정인 공유 장소를 조회합니다.")
+    public ResponseEntity<List<PlaceFindDto>> getSharedPlacesByDay(@PathVariable Long planId, @PathVariable Long day) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getSharedPlacesByDay(planId, day, memberId));
+    }
+
     @DeleteMapping("/{placeId}")
     @Operation(summary = "장소 삭제", description = "장소를 삭제합니다.")
     public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {

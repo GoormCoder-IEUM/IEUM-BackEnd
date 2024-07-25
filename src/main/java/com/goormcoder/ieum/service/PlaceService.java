@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -92,6 +93,16 @@ public class PlaceService {
         planService.validatePlanMember(plan, member);
 
         return PlaceFindDto.listOf(placeRepository.findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(plan));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceFindDto> getSharedPlacesByDay(Long planId, Long day, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        LocalDate date = validateDayAndGetDate(plan, day);
+        return PlaceFindDto.listOf(placeRepository.findByPlanAndDate(plan, date));
     }
 
     @Transactional
@@ -171,6 +182,15 @@ public class PlaceService {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }
         }
+    }
+
+    private LocalDate validateDayAndGetDate(Plan plan, Long day) {
+        long duration = plan.getDuration();
+        if(day < 1 || day > duration) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_DAY_NOT_IN_DURATION.getMessage());
+        }
+
+        return plan.getNthDayDate(day);
     }
 
 }

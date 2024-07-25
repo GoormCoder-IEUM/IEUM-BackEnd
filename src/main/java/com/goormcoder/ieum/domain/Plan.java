@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,5 +79,12 @@ public class Plan extends BaseEntity {
 
     public void addWeatherData(WeatherData weatherData) { this.weatherData.add(weatherData); }
 
+    public long getDuration() {
+        return ChronoUnit.DAYS.between(startedAt.toLocalDate(), endedAt.toLocalDate()) + 1;
+    }
+
+    public LocalDate getNthDayDate(long day) {
+        return this.startedAt.toLocalDate().plusDays(day - 1);
+    }
 
 }
