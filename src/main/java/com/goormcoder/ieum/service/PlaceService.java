@@ -41,7 +41,7 @@ public class PlaceService {
         Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
 
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
         validateDuplicatePlace(plan, member, dto.placeName());
 
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
@@ -69,7 +69,7 @@ public class PlaceService {
     public void deletePlace(Long planId, Long placeId, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
 
         Place place = findPlaceById(placeId);
         handleUnActivePlace(place, member);
@@ -80,7 +80,7 @@ public class PlaceService {
     public void updateVisitTime(Long planId, Long placeId, UUID memberId, PlaceVisitTimeUpdateDto dto) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
         validatePlaceVisitTimeUpdateDto(dto, plan);
 
         Place place = findPlaceById(placeId);
@@ -128,13 +128,6 @@ public class PlaceService {
         if(placeRepository.existsByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(placeName, member, plan)) {
             throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
         }
-    }
-
-    private void validatePlanMember(Plan plan, Member member) {
-        plan.getPlanMembers().stream()
-                .filter(planMember -> planMember.getMember().equals(member))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
     }
 
     private void validatePlaceVisitTimeUpdateDto(PlaceVisitTimeUpdateDto dto, Plan plan) {

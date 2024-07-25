@@ -7,6 +7,7 @@ import com.goormcoder.ieum.domain.PlanMember;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
+import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
 import com.goormcoder.ieum.exception.ErrorMessages;
@@ -45,9 +46,13 @@ public class PlanService {
         return PlanInfoDto.of(planRepository.save(plan));
     }
 
-    public Plan findByPlanId(Long planId) {
-        return planRepository.findById(planId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_NOT_FOUND.getMessage()));
+    @Transactional(readOnly = true)
+    public PlanFindDto getPlan(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = findByPlanId(planId);
+        validatePlanMember(plan, member);
+
+        return PlanFindDto.of(plan);
     }
 
     @Transactional(readOnly = true)
@@ -67,4 +72,17 @@ public class PlanService {
         List<Plan> plans = planRepository.findByDestinationDestinationNameOrderByStartedAtDesc(destinationName);
         return PlanSortDto.listOf(plans);
     }
+
+    public Plan findByPlanId(Long planId) {
+        return planRepository.findById(planId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_NOT_FOUND.getMessage()));
+    }
+
+    public void validatePlanMember(Plan plan, Member member) {
+        plan.getPlanMembers().stream()
+                .filter(planMember -> planMember.getMember().equals(member))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
+    }
+
 }
