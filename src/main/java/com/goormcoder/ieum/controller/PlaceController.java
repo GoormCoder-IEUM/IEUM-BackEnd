@@ -38,7 +38,7 @@ public class PlaceController {
         messagingTemplate.convertAndSend("/sub/plans/" + placeShareDto.planId(), placeFindDto);
     }
 
-    @PostMapping("/pre-place")
+    @PostMapping()
     @Operation(summary = "장소 추가", description = "사용자별로 방문하고 싶은 장소를 추가합니다. 카테고리 유형 - 1(명소) 또는 2(식당/카페) 또는 3(숙소)")
     public ResponseEntity<PlaceInfoDto> createPlace(@PathVariable Long planId, @RequestBody PlaceCreateDto placeCreateDto) {
         UUID memberId = getMemberId();
