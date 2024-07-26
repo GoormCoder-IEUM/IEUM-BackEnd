@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class PlanService {
     private final MemberService memberService;
 
     @Transactional
-    public List<DestinationFindDto> getAllDestination() {
+    public List<DestinationFindDto> getAllDestinations() {
         return DestinationFindDto.listOf(destinationRepository.findAll());
     }
 
@@ -56,20 +57,26 @@ public class PlanService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> getAllPlans() {
+    public List<PlanSortDto> listAllPlans() {
         List<Plan> plans = planRepository.findAll();
         return PlanSortDto.listOf(plans);
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> getAllPlansSortedByStartDate() {
+    public List<PlanSortDto> listPlansByStartDate() {
         List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc();
         return PlanSortDto.listOf(plans);
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> getPlansByDestinationSortedByStartDate(DestinationName destinationName) {
-        List<Plan> plans = planRepository.findByDestinationDestinationNameOrderByStartedAtDesc(destinationName);
+    public List<PlanSortDto> listPlansByDestination(DestinationName destinationName) {
+        List<Plan> plans = planRepository.findByDestination_DestinationNameOrderByStartedAtDesc(destinationName);
+        return PlanSortDto.listOf(plans);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanSortDto> listPlansByDestinationAndDateRange(DestinationName destinationName, LocalDateTime start, LocalDateTime end) {
+        List<Plan> plans = planRepository.findByDestination_DestinationNameAndStartedAtBetween(destinationName, start, end);
         return PlanSortDto.listOf(plans);
     }
 
