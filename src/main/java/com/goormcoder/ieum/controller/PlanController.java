@@ -3,6 +3,7 @@ package com.goormcoder.ieum.controller;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
+import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
 import com.goormcoder.ieum.service.PlanService;
@@ -40,8 +41,11 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.OK).body(planService.createPlan(planCreateDto, memberId));
     }
 
-    private UUID getMemberId() {
-        return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    @GetMapping("/{planId}")
+    @Operation(summary = "일정 조회", description = "일정을 조회합니다.")
+    public ResponseEntity<PlanFindDto> getPlan(@PathVariable Long planId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.getPlan(planId, memberId));
     }
 
     @GetMapping("/all")
@@ -65,10 +69,15 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
+    private UUID getMemberId() {
+        return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    }
+    
     @GetMapping("/sorted/{destinationName}/{start}/{end}")
     @Operation(summary = "특정 기간 동안의 지역별 일정 조회", description = "특정 기간 동안 특정 지역의 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
         List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(destinationName, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
+
 }

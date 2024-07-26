@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.controller;
 
-
 import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
@@ -39,15 +38,43 @@ public class PlaceController {
         messagingTemplate.convertAndSend("/sub/plans/" + placeShareDto.planId(), placeFindDto);
     }
 
-    @PostMapping("/pre-place")
+    @PostMapping()
     @Operation(summary = "장소 추가", description = "사용자별로 방문하고 싶은 장소를 추가합니다. 카테고리 유형 - 1(명소) 또는 2(식당/카페) 또는 3(숙소)")
     public ResponseEntity<PlaceInfoDto> createPlace(@PathVariable Long planId, @RequestBody PlaceCreateDto placeCreateDto) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, memberId, placeCreateDto));
     }
 
+    @GetMapping("/{placeId}")
+    @Operation(summary = "장소 조회", description = "장소를 조회합니다.")
+    public ResponseEntity<PlaceFindDto> getPlace(@PathVariable Long planId, @PathVariable Long placeId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getPlace(planId, placeId, memberId));
+    }
+
+    @GetMapping()
+    @Operation(summary = "장소 전체 조회", description = "사용자별 장소를 전체 조회합니다. 사용자가 공유한 장소는 조회되지 않습니다.")
+    public ResponseEntity<List<PlaceFindDto>> getAllPlaces(@PathVariable Long planId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getAllPlaces(planId, memberId));
+    }
+
+    @GetMapping("/shared")
+    @Operation(summary = "공유 장소 전체 조회", description = "공유된 장소를 전체 조회합니다.")
+    public ResponseEntity<List<PlaceFindDto>> getSharedPlaces(@PathVariable Long planId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getSharedPlaces(planId, memberId));
+    }
+
+    @GetMapping("/shared/{day}")
+    @Operation(summary = "공유 장소 일차별 조회", description = "해당 일차에 방문 예정인 공유 장소를 조회합니다.")
+    public ResponseEntity<List<PlaceFindDto>> getSharedPlacesByDay(@PathVariable Long planId, @PathVariable Long day) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getSharedPlacesByDay(planId, day, memberId));
+    }
+
     @DeleteMapping("/{placeId}")
-    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다. ")
+    @Operation(summary = "장소 삭제", description = "장소를 삭제합니다.")
     public ResponseEntity<String> createPlace(@PathVariable Long planId, @PathVariable Long placeId) {
         UUID memberId = getMemberId();
         placeService.deletePlace(planId, placeId, memberId);
@@ -65,18 +92,6 @@ public class PlaceController {
 
     private UUID getMemberId() {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-    }
-
-    @GetMapping
-    public List<Place> getAllPlaces(@PathVariable Long planId) {
-        return placeService.findAllPlaces();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Place> getPlaceById(@PathVariable Long planId, @PathVariable Long id) {
-//        Optional<Place> place = placeService.findPlaceById(id);
-//        return place.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

@@ -1,7 +1,9 @@
 package com.goormcoder.ieum.service;
 
-
-import com.goormcoder.ieum.domain.*;
+import com.goormcoder.ieum.domain.Category;
+import com.goormcoder.ieum.domain.Member;
+import com.goormcoder.ieum.domain.Place;
+import com.goormcoder.ieum.domain.Plan;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
@@ -15,11 +17,10 @@ import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class PlaceService {
         Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
 
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
         validateDuplicatePlace(plan, member, dto.placeName());
 
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
@@ -65,11 +66,51 @@ public class PlaceService {
         return PlaceFindDto.of(place);
     }
 
+    @Transactional(readOnly = true)
+    public PlaceFindDto getPlace(Long planId, Long placeId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        Place place = findPlaceById(placeId);
+        handleUnActivePlace(place, member);
+
+        return PlaceFindDto.of(place);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceFindDto> getAllPlaces(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        return PlaceFindDto.listOf(placeRepository.findByMemberAndPlanAndActivatedAtIsNullAndDeletedAtIsNull(member, plan));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceFindDto> getSharedPlaces(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        return PlaceFindDto.listOf(placeRepository.findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(plan));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceFindDto> getSharedPlacesByDay(Long planId, Long day, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = planService.findByPlanId(planId);
+        planService.validatePlanMember(plan, member);
+
+        LocalDate date = validateDayAndGetDate(plan, day);
+        return PlaceFindDto.listOf(placeRepository.findByPlanAndDate(plan, date));
+    }
+
     @Transactional
     public void deletePlace(Long planId, Long placeId, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
 
         Place place = findPlaceById(placeId);
         handleUnActivePlace(place, member);
@@ -80,7 +121,7 @@ public class PlaceService {
     public void updateVisitTime(Long planId, Long placeId, UUID memberId, PlaceVisitTimeUpdateDto dto) {
         Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(planId);
-        validatePlanMember(plan, member);
+        planService.validatePlanMember(plan, member);
         validatePlaceVisitTimeUpdateDto(dto, plan);
 
         Place place = findPlaceById(placeId);
@@ -91,10 +132,6 @@ public class PlaceService {
         place.marksStartedAt(dto.startedAt());
         place.marksEndedAt(dto.endedAt());
         placeRepository.save(place);
-    }
-
-    public List<Place> findAllPlaces() {
-        return placeRepository.findAll();
     }
 
     public Place updatePlace(Long id, Place updatedPlace) {
@@ -130,16 +167,17 @@ public class PlaceService {
         }
     }
 
-    private void validatePlanMember(Plan plan, Member member) {
-        plan.getPlanMembers().stream()
-                .filter(planMember -> planMember.getMember().equals(member))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
-    }
-
     private void validatePlaceVisitTimeUpdateDto(PlaceVisitTimeUpdateDto dto, Plan plan) {
-        if(dto.startedAt().isBefore(plan.getStartedAt()) || dto.endedAt().isAfter(plan.getEndedAt())) {
+        LocalDateTime start = dto.startedAt();
+        LocalDateTime end = dto.endedAt();
+
+        if(start.isBefore(plan.getStartedAt()) || start.isAfter(plan.getEndedAt())
+                || end.isBefore(plan.getStartedAt()) || end.isAfter(plan.getEndedAt())) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_TIME.getMessage());
+        }
+
+        if(start.isAfter(end) || start.isEqual(end)) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_START_TIME.getMessage());
         }
     }
 
@@ -149,6 +187,15 @@ public class PlaceService {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }
         }
+    }
+
+    private LocalDate validateDayAndGetDate(Plan plan, Long day) {
+        long duration = plan.getDuration();
+        if(day < 1 || day > duration) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_DAY_NOT_IN_DURATION.getMessage());
+        }
+
+        return plan.getNthDayDate(day);
     }
 
 }

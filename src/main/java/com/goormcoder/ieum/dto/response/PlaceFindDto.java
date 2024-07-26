@@ -1,21 +1,16 @@
 package com.goormcoder.ieum.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.goormcoder.ieum.domain.Place;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record PlaceFindDto(
 
         String placeName,
         String address,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
         LocalDateTime startedAt,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
         LocalDateTime endedAt,
-
         Long categoryId,
         String memberLoginId
 
@@ -29,6 +24,11 @@ public record PlaceFindDto(
                 place.getEndedAt(),
                 place.getCategory().getId(),
                 place.getMember().getLoginId());
+    }
+
+    public static List<PlaceFindDto> listOf(List<Place> places) {
+        return places.stream()
+                .map(PlaceFindDto::of).toList();
     }
 
 }
