@@ -60,6 +60,8 @@ public class PlaceService {
         place.marksActivatedAt();
 
         Plan plan = planService.findByPlanId(dto.planId());
+        place.marksStartedAt(plan.getStartedAt());
+        place.marksEndedAt(plan.getEndedAt());
         plan.addPlace(place);
         planRepository.save(plan);
 
