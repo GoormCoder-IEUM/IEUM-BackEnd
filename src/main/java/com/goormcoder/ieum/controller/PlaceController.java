@@ -46,14 +46,14 @@ public class PlaceController {
     }
 
     @GetMapping("/{placeId}")
-    @Operation(summary = "장소 조회", description = "장소를 조회합니다.")
+    @Operation(summary = "장소 조회", description = "장소를 조회합니다. 공유되지 않은 장소의 경우 방문일시가 응답에 포함되지 않습니다.")
     public ResponseEntity<PlaceFindDto> getPlace(@PathVariable Long planId, @PathVariable Long placeId) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getPlace(planId, placeId, memberId));
     }
 
     @GetMapping()
-    @Operation(summary = "장소 전체 조회", description = "사용자별 장소를 전체 조회합니다. 사용자가 공유한 장소는 조회되지 않습니다.")
+    @Operation(summary = "장소 전체 조회", description = "사용자별 장소를 전체 조회합니다. 사용자가 공유한 장소는 조회되지 않으며, 장소 방문일시는 응답에 포함되지 않습니다.")
     public ResponseEntity<List<PlaceFindDto>> getAllPlaces(@PathVariable Long planId) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAllPlaces(planId, memberId));
