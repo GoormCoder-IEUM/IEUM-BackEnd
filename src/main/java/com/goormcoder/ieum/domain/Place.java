@@ -71,8 +71,8 @@ public class Place extends BaseEntity {
         this.activatedAt = LocalDateTime.now();
     }
 
-    public boolean isActive() {
-        return this.activatedAt != null;
+    public boolean isActivated() {
+        return this.activatedAt == null;
     }
 
     public void marksStartedAt(LocalDateTime startedAt) {
