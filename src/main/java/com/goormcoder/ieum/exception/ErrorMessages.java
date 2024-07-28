@@ -28,7 +28,8 @@ public enum ErrorMessages {
     // 409 CONFLICT
     INVITE_REQUEST_CONFLICT("이미 초대한 멤버입니다."),
     INVITE_RESPONSE_CONFLICT("이미 응답 또는 취소된 초대입니다."),
-    PLACE_CONFLICT("해당 장소는 이미 추가되었습니다.")
+    PLACE_CONFLICT("해당 장소는 이미 추가되었습니다."),
+    SHARED_PLACE_CONFLICT("해당 장소는 이미 공유되었습니다."),
 
     ;
 

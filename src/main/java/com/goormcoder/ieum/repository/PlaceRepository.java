@@ -25,6 +25,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan);
 
+    Boolean existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan, String placeName);
+
     @Query("SELECT p FROM Place p WHERE p.plan = :plan AND CAST(p.startedAt AS DATE) = :date AND p.startedAt IS NOT NULL AND p.activatedAt IS NOT NULL AND p.deletedAt IS NULL ORDER BY p.startedAt")
     List<Place> findByPlanAndDate(@Param("plan") Plan plan, @Param("date") LocalDate date);
 

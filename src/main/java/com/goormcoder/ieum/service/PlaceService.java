@@ -57,9 +57,10 @@ public class PlaceService {
         // memberService.findById(memberId); - 검증 추가 예정
         // validatePlanMember(plan, member);
         Place place = findPlaceById(dto.placeId());
-        place.marksActivatedAt();
-
         Plan plan = planService.findByPlanId(dto.planId());
+        validateSharedPlace(plan, place);
+
+        place.marksActivatedAt();
         place.marksStartedAt(plan.getStartedAt());
         place.marksEndedAt(plan.getEndedAt());
         plan.addPlace(place);
@@ -198,6 +199,12 @@ public class PlaceService {
         }
 
         return plan.getNthDayDate(day);
+    }
+
+    private void validateSharedPlace(Plan plan, Place place) {
+        if(placeRepository.existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName())) {
+            throw new ConflictException(ErrorMessages.SHARED_PLACE_CONFLICT);
+        }
     }
 
 }
