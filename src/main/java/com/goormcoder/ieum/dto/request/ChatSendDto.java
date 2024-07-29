@@ -6,8 +6,6 @@ public record ChatSendDto(
         @NotNull
         Long planId,
 
-        String senderLoginId,
-
         @NotNull
         String message
 ) {

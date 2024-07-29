@@ -24,11 +24,9 @@ public class ChatService {
     private final PlanMemberService planMemberService;
 
     @Transactional
-    public Chat saveMessage(ChatSendDto chatSendDto
-//                            ,UUID memberId
-    ) {
+    public Chat saveMessage(ChatSendDto chatSendDto, UUID memberId) {
         Plan plan = planService.findByPlanId(chatSendDto.planId());
-        Member sender = memberService.findByLoginId(chatSendDto.senderLoginId());
+        Member sender = memberService.findById(memberId);
         planMemberService.checkContainPlanMember(sender.getId(), plan.getId());
 
         Chat chat = Chat.of(chatSendDto.message(), sender, plan);
