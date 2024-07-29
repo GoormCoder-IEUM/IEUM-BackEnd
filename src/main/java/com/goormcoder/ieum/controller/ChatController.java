@@ -1,9 +1,11 @@
 package com.goormcoder.ieum.controller;
 
 import com.goormcoder.ieum.domain.Chat;
+import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.dto.request.ChatSendDto;
 import com.goormcoder.ieum.dto.response.ChatFindDto;
 import com.goormcoder.ieum.service.ChatService;
+import com.goormcoder.ieum.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,11 +35,9 @@ public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @MessageMapping("/share-plan/chats")
-    public void sendMessage(@Payload ChatSendDto chatSendDto) {
-//        UUID memberId = TODO : 검증 후 획득 로직;
-//        Chat message = chatService.saveMessage(chatSendDto, memberId);
-        log.info("chatSendDto={}",chatSendDto);
-        Chat message = chatService.saveMessage(chatSendDto);
+    public void sendMessage(@Payload ChatSendDto chatSendDto, SimpMessageHeaderAccessor accessor) {
+        UUID memberId = (UUID) accessor.getSessionAttributes().get("memberId");
+        Chat message = chatService.saveMessage(chatSendDto, memberId);
         messagingTemplate.convertAndSend(
                 "/sub/chats/plan/" + message.getPlan().getId(),
                 ChatFindDto.of(message)
