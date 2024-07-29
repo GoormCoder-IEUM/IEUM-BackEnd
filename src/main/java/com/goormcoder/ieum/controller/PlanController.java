@@ -51,28 +51,32 @@ public class PlanController {
     @GetMapping("/all")
     @Operation(summary = "전체 일정 조회", description = "모든 여행 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> listAllPlans() {
-        List<PlanSortDto> plans = planService.listAllPlans();
+        UUID memberId = getMemberId();
+        List<PlanSortDto> plans = planService.listAllPlans(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted")
     @Operation(summary = "최신순으로 일정 조회", description = "최신순으로 정렬된 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> listPlansByStartDate() {
-        List<PlanSortDto> plans = planService.listPlansByStartDate();
+        UUID memberId = getMemberId();
+        List<PlanSortDto> plans = planService.listPlansByStartDate(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted/{destinationName}")
     @Operation(summary = "지역별 일정 조회", description = "특정 지역의 일정을 최신순으로 정렬하여 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> listPlansByDestination(@PathVariable DestinationName destinationName) {
-        List<PlanSortDto> plans = planService.listPlansByDestination(destinationName);
+        UUID memberId = getMemberId();
+        List<PlanSortDto> plans = planService.listPlansByDestination(memberId, destinationName);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
     
     @GetMapping("/sorted/{destinationName}/{start}/{end}")
     @Operation(summary = "특정 기간 동안의 지역별 일정 조회", description = "특정 기간 동안 특정 지역의 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
-        List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(destinationName, start, end);
+        UUID memberId = getMemberId();
+        List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(memberId, destinationName, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 

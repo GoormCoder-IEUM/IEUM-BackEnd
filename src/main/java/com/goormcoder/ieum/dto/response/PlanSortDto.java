@@ -21,7 +21,7 @@ public class PlanSortDto {
     public static PlanSortDto of(Plan plan) {
         return PlanSortDto.builder()
                 .id(plan.getId())
-                .destinationName(String.valueOf(plan.getDestination()))
+                .destinationName(plan.getDestination().getDestinationName().toString())
                 .startedAt(plan.getStartedAt())
                 .endedAt(plan.getEndedAt())
                 .vehicle(plan.getVehicle())
