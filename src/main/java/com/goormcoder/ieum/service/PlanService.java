@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,26 +58,34 @@ public class PlanService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> listAllPlans() {
-        List<Plan> plans = planRepository.findAll();
+    public List<PlanSortDto> listAllPlans(UUID memberId) {
+        List<Plan> plans = planRepository.findAll().stream()
+                .filter(plan -> plan.getPlanMembers().stream().anyMatch(pm -> pm.getMember().getId().equals(memberId)))
+                .collect(Collectors.toList());
         return PlanSortDto.listOf(plans);
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> listPlansByStartDate() {
-        List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc();
+    public List<PlanSortDto> listPlansByStartDate(UUID memberId) {
+        List<Plan> plans = planRepository.findAllByOrderByStartedAtDesc().stream()
+                .filter(plan -> plan.getPlanMembers().stream().anyMatch(pm -> pm.getMember().getId().equals(memberId)))
+                .collect(Collectors.toList());
         return PlanSortDto.listOf(plans);
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> listPlansByDestination(DestinationName destinationName) {
-        List<Plan> plans = planRepository.findByDestination_DestinationNameOrderByStartedAtDesc(destinationName);
+    public List<PlanSortDto> listPlansByDestination(UUID memberId, DestinationName destinationName) {
+        List<Plan> plans = planRepository.findByDestination_DestinationNameOrderByStartedAtDesc(destinationName).stream()
+                .filter(plan -> plan.getPlanMembers().stream().anyMatch(pm -> pm.getMember().getId().equals(memberId)))
+                .collect(Collectors.toList());
         return PlanSortDto.listOf(plans);
     }
 
     @Transactional(readOnly = true)
-    public List<PlanSortDto> listPlansByDestinationAndDateRange(DestinationName destinationName, LocalDateTime start, LocalDateTime end) {
-        List<Plan> plans = planRepository.findByDestination_DestinationNameAndStartedAtBetween(destinationName, start, end);
+    public List<PlanSortDto> listPlansByDestinationAndDateRange(UUID memberId, DestinationName destinationName, LocalDateTime start, LocalDateTime end) {
+        List<Plan> plans = planRepository.findByDestination_DestinationNameAndStartedAtBetween(destinationName, start, end).stream()
+                .filter(plan -> plan.getPlanMembers().stream().anyMatch(pm -> pm.getMember().getId().equals(memberId)))
+                .collect(Collectors.toList());
         return PlanSortDto.listOf(plans);
     }
 
