@@ -89,8 +89,17 @@ public class PlanService {
         return PlanSortDto.listOf(plans);
     }
 
+    @Transactional
+    public void deletePlan(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = findByPlanId(planId);
+        validatePlanMember(plan, member);
+        plan.markAsDeleted();
+        planRepository.save(plan);
+    }
+
     public Plan findByPlanId(Long planId) {
-        return planRepository.findById(planId)
+        return planRepository.findByIdAndDeletedAtIsNull(planId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_NOT_FOUND.getMessage()));
     }
 

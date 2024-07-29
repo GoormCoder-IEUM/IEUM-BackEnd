@@ -7,9 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
+
+    Optional<Plan> findByIdAndDeletedAtIsNull(Long id);
 
     // 최신순으로 모든 일정 조회
     List<Plan> findAllByOrderByStartedAtDesc();

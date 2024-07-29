@@ -57,9 +57,12 @@ public class PlaceService {
         // memberService.findById(memberId); - 검증 추가 예정
         // validatePlanMember(plan, member);
         Place place = findPlaceById(dto.placeId());
-        place.marksActivatedAt();
-
         Plan plan = planService.findByPlanId(dto.planId());
+        validateSharedPlace(plan, place);
+
+        place.marksActivatedAt();
+        place.marksStartedAt(plan.getStartedAt());
+        place.marksEndedAt(plan.getEndedAt());
         plan.addPlace(place);
         planRepository.save(plan);
 
@@ -125,7 +128,7 @@ public class PlaceService {
         validatePlaceVisitTimeUpdateDto(dto, plan);
 
         Place place = findPlaceById(placeId);
-        if(!place.isActive()) {
+        if(place.isActivated()) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_NOT_ACTIVE.getMessage());
         }
 
@@ -182,7 +185,7 @@ public class PlaceService {
     }
 
     private void handleUnActivePlace(Place place, Member member) {
-        if(!place.isActive()) {
+        if(place.isActivated()) {
             if(!place.getMember().equals(member)) {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }
@@ -196,6 +199,12 @@ public class PlaceService {
         }
 
         return plan.getNthDayDate(day);
+    }
+
+    private void validateSharedPlace(Plan plan, Place place) {
+        if(placeRepository.existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName())) {
+            throw new ConflictException(ErrorMessages.SHARED_PLACE_CONFLICT);
+        }
     }
 
 }

@@ -71,17 +71,25 @@ public class PlanController {
         List<PlanSortDto> plans = planService.listPlansByDestination(memberId, destinationName);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
-
-    private UUID getMemberId() {
-        return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-    }
-
+    
     @GetMapping("/sorted/{destinationName}/{start}/{end}")
     @Operation(summary = "특정 기간 동안의 지역별 일정 조회", description = "특정 기간 동안 특정 지역의 일정을 조회합니다.")
     public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
         UUID memberId = getMemberId();
         List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(memberId, destinationName, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
+    }
+
+    @DeleteMapping("/{planId}")
+    @Operation(summary = "일정 삭제", description = "일정을 삭제합니다.")
+    public ResponseEntity<String> deletePlan(@PathVariable Long planId) {
+        UUID memberId = getMemberId();
+        planService.deletePlan(planId, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body("일정이 삭제되었습니다.");
+    }
+
+    private UUID getMemberId() {
+        return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
 
 }
