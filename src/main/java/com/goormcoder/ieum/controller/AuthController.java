@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     @Operation(summary = "카카오 로그인 / 회원 가입")
-    @GetMapping("/{registrationId}/callback")
+    @GetMapping("/{registrationId}/login")
     public ResponseEntity<JwtTokenDto> oAuth(@PathVariable String registrationId, @RequestParam("code") String code) {
         OAuthUserInfoDto oAuthUserInfoDto = switch (registrationId) {
             case "kakao" -> kakaoOauthService.getUserInfo(code);
