@@ -7,7 +7,7 @@ import java.util.List;
 
 public record InviteFindAllDto(
         Long planId,
-        String planName, //TODO : 일정 이름 추후 추가
+        String planName,
         DestinationName destinationName,
         MemberSummaryDto member
 ) {
@@ -18,7 +18,7 @@ public record InviteFindAllDto(
                 .filter(invite -> invite.getDeletedAt() == null && invite.getAcceptance() == null)
                 .map(invite -> new InviteFindAllDto(
                         invite.getPlan().getId(),
-                        "임시 이름",
+                        invite.getPlan().getDestination().getDestinationName().getKrName() + " 여행 일정",
                         invite.getPlan().getDestination().getDestinationName(),
                         MemberSummaryDto.of(invite.getMember())
                 )).toList();

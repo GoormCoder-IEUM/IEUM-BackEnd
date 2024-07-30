@@ -1,8 +1,10 @@
 package com.goormcoder.ieum.dto.request;
 
+import java.util.UUID;
+
 public record PlanMemberCreateDto(
 
-        String[] memberLoginIds
+        UUID[] memberIds
 
 ) {
 }
