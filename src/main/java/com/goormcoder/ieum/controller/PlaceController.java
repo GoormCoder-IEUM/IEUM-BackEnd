@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,9 @@ public class PlaceController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @MessageMapping("/share-place")
-    public void addPlace(@Payload PlaceShareDto placeShareDto) {
-        // UUID memberId = getMemberId(); - 검증 추가 예정
-        PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto);
+    public void addPlace(@Payload PlaceShareDto placeShareDto, SimpMessageHeaderAccessor accessor) {
+        UUID memberId = (UUID) accessor.getSessionAttributes().get("memberId");
+        PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto, memberId);
         messagingTemplate.convertAndSend("/sub/plans/" + placeShareDto.planId(), placeFindDto);
     }
 
