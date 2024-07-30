@@ -41,6 +41,7 @@ public class PlanService {
         Member member = memberService.findById(memberId);
         Destination destination = destinationRepository.findById(dto.destinationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.DESTINATION_NOT_FOUND.getMessage()));
+        validatePlanCreateDto(dto);
 
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
@@ -108,6 +109,15 @@ public class PlanService {
                 .filter(planMember -> planMember.getMember().equals(member))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    private void validatePlanCreateDto(PlanCreateDto dto) {
+        LocalDateTime start = dto.startedAt();
+        LocalDateTime end = dto.endedAt();
+
+        if(start.isAfter(end) || start.isEqual(end)) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_START_TIME.getMessage());
+        }
     }
 
 }

@@ -5,9 +5,11 @@ import com.goormcoder.ieum.domain.Place;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record PlaceFindDto(
 
+        Long id,
         String placeName,
         String address,
 
@@ -17,18 +19,19 @@ public record PlaceFindDto(
         LocalDateTime endedAt,
         
         Long categoryId,
-        String memberLoginId
+        UUID memberId
 
 ) {
 
     public static PlaceFindDto of(Place place) {
         return new PlaceFindDto(
+                place.getId(),
                 place.getPlaceName(),
                 place.getAddress(),
                 place.getStartedAt(),
                 place.getEndedAt(),
                 place.getCategory().getId(),
-                place.getMember().getLoginId());
+                place.getMember().getId());
     }
 
     public static List<PlaceFindDto> listOf(List<Place> places) {
