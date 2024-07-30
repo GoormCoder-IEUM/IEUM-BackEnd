@@ -52,7 +52,7 @@ public class AuthController {
         return ResponseEntity.ok(jwtToken);
     }
 
-    @Operation(summary = "카카오 로그인 / 회원 가입")
+    @Operation(summary = "oAuth 로그인 / 회원가입", description = "registrationId : kakao")
     @GetMapping("/{registrationId}/login")
     public ResponseEntity<JwtTokenDto> oAuth(@PathVariable String registrationId, @RequestParam("code") String code) {
         OAuthUserInfoDto oAuthUserInfoDto = switch (registrationId) {
