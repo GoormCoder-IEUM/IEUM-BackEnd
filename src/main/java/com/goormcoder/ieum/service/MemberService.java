@@ -60,6 +60,7 @@ public class MemberService {
                 .password(null)
                 .build();
         memberRepository.save(member);
+        log.info("created new member by oauth, id: {}", member.getId());
         return member;
     }
 
