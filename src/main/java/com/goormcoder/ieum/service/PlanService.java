@@ -15,11 +15,19 @@ import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,6 +38,8 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final DestinationRepository destinationRepository;
     private final MemberService memberService;
+//    private final KakaoCalendarService kakaoCalendarService;
+
 
     @Transactional
     public List<DestinationFindDto> getAllDestinations() {
@@ -45,6 +55,8 @@ public class PlanService {
 
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
+
+//        kakaoCalendarService.createKakaoSubCalendar(destination.getDestinationName().toString(), plan.getStartedAt(), plan.getEndedAt(), plan.getVehicle().name());
 
         return PlanInfoDto.of(planRepository.save(plan));
     }

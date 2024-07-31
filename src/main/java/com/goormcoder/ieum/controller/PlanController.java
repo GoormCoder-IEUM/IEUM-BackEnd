@@ -6,6 +6,7 @@ import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
+import com.goormcoder.ieum.service.KakaoOauthService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,13 @@ import java.util.UUID;
 public class PlanController {
 
     private final PlanService planService;
+//    private final KakaoOauthService kakaoOauthService;
+
+//    @PostMapping("/auth/kakao")
+//    public ResponseEntity<String> kakaoAuth(@RequestParam String code) {
+//        String accessToken = kakaoOauthService.retrieveAccessToken(code);
+//        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
+//    }
 
     @GetMapping
     @Operation(summary = "여행지 목록 조회", description = "여행지 목록을 조회합니다.")
@@ -91,5 +99,7 @@ public class PlanController {
     private UUID getMemberId() {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
+
+
 
 }
