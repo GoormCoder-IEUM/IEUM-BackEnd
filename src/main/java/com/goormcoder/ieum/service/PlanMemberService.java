@@ -37,13 +37,13 @@ public class PlanMemberService {
 
 
     @Transactional
-    public InviteResultDto invitePlanMember(UUID memberId, Long planId, String[] memberLoginIds) {
+    public InviteResultDto invitePlanMember(UUID memberId, Long planId, UUID[] memberIds) {
         // TODO : 일정에 일정 이름 필드 추가검토 -> 초대목록에 이름, 여행지로 표시되게 (ex : 놀러가자(제주))
         checkContainPlanMember(memberId, planId);
         Plan plan = findPlanByPlanId(planId);
 
-        List<Member> members = Stream.of(memberLoginIds)
-                .map(memberService::findByLoginId)
+        List<Member> members = Stream.of(memberIds)
+                .map(memberService::findById)
                 .toList();
 
         List<Member> successMembers = new ArrayList<>();
@@ -78,10 +78,10 @@ public class PlanMemberService {
     }
 
     @Transactional
-    public void cancelPlanMemberInvite(UUID memberId, String loginId, Long planId) {
+    public void cancelPlanMemberInvite(UUID memberId, UUID invitedMemberId, Long planId) {
         checkContainPlanMember(memberId, planId);
-        Member member = memberService.findByLoginId(loginId);
-        Invite invite = checkValidInvite(member.getId(), planId);
+        Member invitedMember = memberService.findById(invitedMemberId);
+        Invite invite = checkValidInvite(invitedMember.getId(), planId);
 
         invite.markAsDeleted();
 

@@ -53,11 +53,11 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceFindDto sharePlace(PlaceShareDto dto) {
-        // memberService.findById(memberId); - 검증 추가 예정
-        // validatePlanMember(plan, member);
-        Place place = findPlaceById(dto.placeId());
+    public PlaceFindDto sharePlace(PlaceShareDto dto, UUID memberId) {
+        Member member = memberService.findById(memberId);
         Plan plan = planService.findByPlanId(dto.planId());
+        planService.validatePlanMember(plan, member);
+        Place place = findPlaceById(dto.placeId());
         validateSharedPlace(plan, place);
 
         place.marksActivatedAt();
