@@ -38,7 +38,7 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final DestinationRepository destinationRepository;
     private final MemberService memberService;
-    private final KakaoCalendarService kakaoCalendarService;
+//    private final KakaoCalendarService kakaoCalendarService;
 
 
     @Transactional
@@ -56,7 +56,7 @@ public class PlanService {
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
 
-        kakaoCalendarService.createKakaoSubCalendar(destination.getDestinationName().toString(), plan.getStartedAt(), plan.getEndedAt(), plan.getVehicle().name());
+//        kakaoCalendarService.createKakaoSubCalendar(destination.getDestinationName().toString(), plan.getStartedAt(), plan.getEndedAt(), plan.getVehicle().name());
 
         return PlanInfoDto.of(planRepository.save(plan));
     }

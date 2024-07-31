@@ -84,4 +84,8 @@ public class KakaoOauthService {
         return restTemplate.exchange(userinfoUrl, HttpMethod.GET, entity, Map.class).getBody();
     }
 
+    public String retrieveAccessToken(String code) {
+        return getAccessToken(code);
+    }
+
 }
