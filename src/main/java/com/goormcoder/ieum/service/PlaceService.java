@@ -12,7 +12,9 @@ import com.goormcoder.ieum.dto.response.PlaceInfoDto;
 import com.goormcoder.ieum.exception.ConflictException;
 import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.exception.ForbiddenException;
+import com.goormcoder.ieum.exception.PlaceShareWebSocketException;
 import com.goormcoder.ieum.repository.CategoryRepository;
+import com.goormcoder.ieum.repository.MemberRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +33,7 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final PlanRepository planRepository;
+    private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
 
     private final MemberService memberService;
@@ -54,11 +57,8 @@ public class PlaceService {
 
     @Transactional
     public PlaceFindDto sharePlace(PlaceShareDto dto, UUID memberId) {
-        Member member = memberService.findById(memberId);
-        Plan plan = planService.findByPlanId(dto.planId());
-        planService.validatePlanMember(plan, member);
-        Place place = findPlaceById(dto.placeId());
-        validateSharedPlace(plan, place);
+        Plan plan = validatePlanForWebsocket(dto.planId(), memberId);
+        Place place = validatePlaceForWebsocket(dto.placeId(), plan, memberId);
 
         place.marksActivatedAt();
         place.marksStartedAt(plan.getStartedAt());
@@ -201,10 +201,30 @@ public class PlaceService {
         return plan.getNthDayDate(day);
     }
 
-    private void validateSharedPlace(Plan plan, Place place) {
+    private Plan validatePlanForWebsocket(Long planId, UUID memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.MEMBER_NOT_FOUND, null, null));
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_NOT_FOUND, member, null));
+
+        plan.getPlanMembers().stream()
+                .filter(planMember -> planMember.getMember().equals(member))
+                .findFirst()
+                .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_MEMBER_NOT_FOUND, member, plan));
+
+        return plan;
+    }
+
+    private Place validatePlaceForWebsocket(Long placeId, Plan plan, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Place place = placeRepository.findById(placeId)
+                        .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLACE_NOT_FOUND, member, plan));
+
         if(placeRepository.existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName())) {
-            throw new ConflictException(ErrorMessages.SHARED_PLACE_CONFLICT);
+            throw new PlaceShareWebSocketException(ErrorMessages.SHARED_PLACE_CONFLICT, member, plan);
         }
+
+        return place;
     }
 
 }

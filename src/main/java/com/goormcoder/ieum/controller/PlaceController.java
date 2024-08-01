@@ -6,6 +6,8 @@ import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
+import com.goormcoder.ieum.exception.ErrorMessages;
+import com.goormcoder.ieum.exception.PlaceShareWebSocketException;
 import com.goormcoder.ieum.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
