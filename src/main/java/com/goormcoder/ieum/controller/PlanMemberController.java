@@ -28,7 +28,7 @@ public class PlanMemberController {
     @Operation(summary = "멤버 초대", description = "일정에 멤버를 초대합니다.")
     public ResponseEntity<InviteResultDto> invitePlanMember(@PathVariable Long planId, @RequestBody PlanMemberCreateDto planMemberCreateDto) {
         UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        InviteResultDto inviteResult = planMemberService.invitePlanMember(memberId, planId, planMemberCreateDto.memberLoginIds());
+        InviteResultDto inviteResult = planMemberService.invitePlanMember(memberId, planId, planMemberCreateDto.memberIds());
         return ResponseEntity.status(HttpStatus.OK).body(inviteResult);
     }
 
@@ -54,11 +54,11 @@ public class PlanMemberController {
         return ResponseEntity.status(HttpStatus.OK).body("[" + acceptance + "] 응답이 완료되었습니다.");
     }
 
-    @DeleteMapping("/invite/cancel/{planId}/{loginId}")
+    @DeleteMapping("/invite/cancel/{planId}/{invitedMemberId}")
     @Operation(summary = "멤버 초대 취소", description = "보낸 초대를 취소합니다. (상대가 응답하기 전에만 가능)")
-    public ResponseEntity<String> cancelInvite(@PathVariable Long planId, @PathVariable String loginId) {
+    public ResponseEntity<String> cancelInvite(@PathVariable Long planId, @PathVariable UUID invitedMemberId) {
         UUID memberId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        planMemberService.cancelPlanMemberInvite(memberId, loginId, planId);
+        planMemberService.cancelPlanMemberInvite(memberId, invitedMemberId, planId);
         return ResponseEntity.status(HttpStatus.OK).body("초대 취소가 완료되었습니다.");
     }
 

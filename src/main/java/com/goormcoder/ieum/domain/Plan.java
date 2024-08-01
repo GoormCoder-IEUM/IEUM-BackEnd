@@ -87,4 +87,11 @@ public class Plan extends BaseEntity {
         return this.startedAt.toLocalDate().plusDays(day - 1);
     }
 
+    public void update(Destination destination, LocalDateTime startedAt, LocalDateTime endedAt, PlanVehicle vehicle) {
+        this.destination = destination;
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
+        this.vehicle = vehicle;
+    }
+
 }

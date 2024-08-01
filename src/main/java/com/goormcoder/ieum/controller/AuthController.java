@@ -3,6 +3,7 @@ package com.goormcoder.ieum.controller;
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.dto.request.LoginDto;
 import com.goormcoder.ieum.dto.request.MemberCreateDto;
+import com.goormcoder.ieum.dto.request.RefreshDto;
 import com.goormcoder.ieum.dto.response.JwtTokenDto;
 import com.goormcoder.ieum.dto.response.MemberFindDto;
 import com.goormcoder.ieum.dto.response.OAuthUserInfoDto;
@@ -67,7 +68,8 @@ public class AuthController {
 
     @Operation(summary = "액세스 토큰 재발급")
     @PostMapping("/refresh")
-    public ResponseEntity<String> refresh(@RequestBody String refreshToken) {
+    public ResponseEntity<String> refresh(@RequestBody RefreshDto refreshDto) {
+        String refreshToken = refreshDto.refreshToken();
         if (!refreshTokenService.isExists(refreshToken)) {
             return ResponseEntity.ok("만료되었거나 유효하지 않은 리프래시 토큰입니다.");
         }

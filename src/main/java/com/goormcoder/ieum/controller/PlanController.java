@@ -1,11 +1,13 @@
 package com.goormcoder.ieum.controller;
 
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
+import com.goormcoder.ieum.domain.enumeration.PlanVehicle;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
 import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
+import com.goormcoder.ieum.service.KakaoOauthService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,13 @@ import java.util.UUID;
 public class PlanController {
 
     private final PlanService planService;
+//    private final KakaoOauthService kakaoOauthService;
+
+//    @PostMapping("/auth/kakao")
+//    public ResponseEntity<String> kakaoAuth(@RequestParam String code) {
+//        String accessToken = kakaoOauthService.retrieveAccessToken(code);
+//        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
+//    }
 
     @GetMapping
     @Operation(summary = "여행지 목록 조회", description = "여행지 목록을 조회합니다.")
@@ -88,8 +97,44 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.OK).body("일정이 삭제되었습니다.");
     }
 
+    @PutMapping("/{planId}")
+    @Operation(summary = "일정 수정", description = "일정을 수정합니다.")
+    public ResponseEntity<PlanInfoDto> updatePlan(@PathVariable Long planId, @Valid @RequestBody PlanCreateDto planCreateDto) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.updatePlan(planId, planCreateDto, memberId));
+    }
+
+    @PutMapping("/{planId}/destination")
+    @Operation(summary = "일정 목적지 변경", description = "일정의 목적지를 변경합니다.")
+    public ResponseEntity<PlanInfoDto> changeDestination(@PathVariable Long planId, @RequestParam Long newDestinationId) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.updateDestination(planId, newDestinationId, memberId));
+    }
+
+    @PutMapping("/{planId}/start-time")
+    @Operation(summary = "일정 시작 시간 변경", description = "일정의 시작 시간을 변경합니다.")
+    public ResponseEntity<PlanInfoDto> changeStartTime(@PathVariable Long planId, @RequestParam LocalDateTime newStartTime) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.updateStartTime(planId, newStartTime, memberId));
+    }
+
+    @PutMapping("/{planId}/end-time")
+    @Operation(summary = "일정 끝나는 시간 변경", description = "일정의 끝나는 시간을 변경합니다.")
+    public ResponseEntity<PlanInfoDto> changeEndTime(@PathVariable Long planId, @RequestParam LocalDateTime newEndTime) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.updateEndTime(planId, newEndTime, memberId));
+    }
+
+    @PutMapping("/{planId}/vehicle")
+    @Operation(summary = "일정 교통수단 변경", description = "일정의 교통수단을 변경합니다.")
+    public ResponseEntity<PlanInfoDto> changeVehicle(@PathVariable Long planId, @RequestParam PlanVehicle newVehicle) {
+        UUID memberId = getMemberId();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.changeVehicle(planId, newVehicle, memberId));
+    }
+
     private UUID getMemberId() {
         return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
     }
+
 
 }

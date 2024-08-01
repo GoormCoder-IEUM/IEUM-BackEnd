@@ -63,7 +63,6 @@ public class JwtProvider {
         Date refreshTokenExpiresIn = new Date(now.getTime() + refreshTokenExpirationMs);
         return Jwts.builder()
                 .claim("id", member.getId())
-                .claim("role", member.getRole().getValue())
                 .setIssuedAt(now)
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
