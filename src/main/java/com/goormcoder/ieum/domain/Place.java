@@ -83,4 +83,9 @@ public class Place extends BaseEntity {
         this.endedAt = endedAt;
     }
 
+    public void resetVisitTimes() {
+        this.startedAt = null;
+        this.endedAt = null;
+    }
+
 }

@@ -129,7 +129,7 @@ public class PlanController {
     @Operation(summary = "일정 교통수단 변경", description = "일정의 교통수단을 변경합니다.")
     public ResponseEntity<PlanInfoDto> changeVehicle(@PathVariable Long planId, @RequestParam PlanVehicle newVehicle) {
         UUID memberId = getMemberId();
-        return ResponseEntity.status(HttpStatus.OK).body(planService.changeVehicle(planId, newVehicle, memberId));
+        return ResponseEntity.status(HttpStatus.OK).body(planService.updateVehicle(planId, newVehicle, memberId));
     }
 
     private UUID getMemberId() {
