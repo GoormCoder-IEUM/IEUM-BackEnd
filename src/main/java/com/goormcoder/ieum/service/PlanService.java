@@ -1,9 +1,6 @@
 package com.goormcoder.ieum.service;
 
-import com.goormcoder.ieum.domain.Destination;
-import com.goormcoder.ieum.domain.Member;
-import com.goormcoder.ieum.domain.Plan;
-import com.goormcoder.ieum.domain.PlanMember;
+import com.goormcoder.ieum.domain.*;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.domain.enumeration.PlanVehicle;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
@@ -123,6 +120,7 @@ public class PlanService {
         validatePlanCreateDto(dto);
 
         plan.update(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
+        resetInvalidPlaceTimes(plan);
 
         return PlanInfoDto.of(planRepository.save(plan));
     }
@@ -150,6 +148,7 @@ public class PlanService {
         validateStartEndTime(newStartTime, plan.getEndedAt());
 
         plan.update(plan.getDestination(), newStartTime, plan.getEndedAt(), plan.getVehicle());
+        resetInvalidPlaceTimes(plan);
 
         return PlanInfoDto.of(planRepository.save(plan));
     }
@@ -163,12 +162,13 @@ public class PlanService {
         validateStartEndTime(plan.getStartedAt(), newEndTime);
 
         plan.update(plan.getDestination(), plan.getStartedAt(), newEndTime, plan.getVehicle());
+        resetInvalidPlaceTimes(plan);
 
         return PlanInfoDto.of(planRepository.save(plan));
     }
 
     @Transactional
-    public PlanInfoDto changeVehicle(Long planId, PlanVehicle newVehicle, UUID memberId) {
+    public PlanInfoDto updateVehicle(Long planId, PlanVehicle newVehicle, UUID memberId) {
         Member member = memberService.findById(memberId);
         Plan plan = findByPlanId(planId);
         validatePlanMember(plan, member);
@@ -194,7 +194,7 @@ public class PlanService {
         LocalDateTime start = dto.startedAt();
         LocalDateTime end = dto.endedAt();
 
-        if(start.isAfter(end) || start.isEqual(end)) {
+        if (start.isAfter(end) || start.isEqual(end)) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_START_TIME.getMessage());
         }
     }
@@ -205,5 +205,12 @@ public class PlanService {
         }
     }
 
+    private void resetInvalidPlaceTimes(Plan plan) {
+        for (Place place : plan.getPlaces()) {
+            if (place.getStartedAt().isBefore(plan.getStartedAt()) || place.getEndedAt().isAfter(plan.getEndedAt())) {
+                place.resetVisitTimes();
+            }
+        }
 
+    }
 }
