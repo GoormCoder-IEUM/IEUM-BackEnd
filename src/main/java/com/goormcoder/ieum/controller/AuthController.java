@@ -73,7 +73,7 @@ public class AuthController {
         if (!refreshTokenService.isExists(refreshToken)) {
             return ResponseEntity.ok("만료되었거나 유효하지 않은 리프래시 토큰입니다.");
         }
-        UUID memberId = jwtProvider.getMemberIdFromRefreshToken(refreshToken);
+        UUID memberId = UUID.fromString(jwtProvider.getMemberId(refreshToken));
         Member member = memberService.findById(memberId);
         String accessToken = jwtProvider.generateAccessToken(member);
         return ResponseEntity.ok(accessToken);

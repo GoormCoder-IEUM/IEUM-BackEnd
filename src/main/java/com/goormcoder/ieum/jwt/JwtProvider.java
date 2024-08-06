@@ -2,6 +2,7 @@ package com.goormcoder.ieum.jwt;
 
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.dto.response.JwtTokenDto;
+import com.goormcoder.ieum.service.CustomUserDetailsService;
 import com.sun.security.auth.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,10 +17,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,6 +36,9 @@ public class JwtProvider {
 
     @Value("${jwt.refreshTokenExpirationMs}")
     private long refreshTokenExpirationMs;
+
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
     public JwtProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -51,7 +57,6 @@ public class JwtProvider {
         Date accessTokenExpiresIn = new Date(now.getTime() + accessTokenExpirationMs);
         return Jwts.builder()
                 .claim("id", member.getId())
-                .claim("role", member.getRole().getValue())
                 .setIssuedAt(now)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -69,36 +74,24 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(accessToken)
-                .getBody();
-
-        if (claims.get("id") == null || claims.get("role") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-        }
-
-        String id = claims.get("id").toString();
-        String role = claims.get("role").toString();
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
-        return new UsernamePasswordAuthenticationToken(new UserPrincipal(id), "", Collections.singletonList(authority));
+    public Authentication getAuthentication(String token) {
+        String id = this.getMemberId(token);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(id);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public UUID getMemberIdFromRefreshToken(String refreshToken) {
+    public String getMemberId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(refreshToken)
+                .parseClaimsJws(token)
                 .getBody();
 
         if (claims.get("id") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new RuntimeException("유효하지 않은 토큰입니다.");
         }
 
-        return UUID.fromString(claims.get("id").toString());
+        return claims.get("id").toString();
     }
 
 }
