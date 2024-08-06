@@ -35,23 +35,23 @@ public class KakaoOauthService {
     public OAuthUserInfoDto getUserInfo(String code) {
         String accessToken = getAccessToken(code);
         Map attributes = getUserInfoAttributes(accessToken);
-        Map kakao_account = (Map) attributes.get("kakao_account");
-        Map profile = (Map) kakao_account.get("profile");
+        Map kakaoAccount = (Map) attributes.get("kakao_account");
+        Map profile = (Map) kakaoAccount.get("profile");
         return OAuthUserInfoDto.builder()
                 .registrationId("kakao")
                 .id(attributes.get("id").toString())
                 .name(profile.get("nickname").toString())
-                .email(kakao_account.get("email").toString())
+                .email(kakaoAccount.get("email").toString())
                 .gender(
-                        kakao_account.get("gender").equals("male")
+                        kakaoAccount.get("gender").equals("male")
                                 ? Gender.MALE
                                 : Gender.FEMALE
                 )
                 .birth(
                         LocalDate.of(
-                                Integer.parseInt(kakao_account.get("birthyear").toString()),
-                                Integer.parseInt(kakao_account.get("birthday").toString().substring(0, 2)),
-                                Integer.parseInt(kakao_account.get("birthday").toString().substring(2, 4))
+                                Integer.parseInt(kakaoAccount.get("birthyear").toString()),
+                                Integer.parseInt(kakaoAccount.get("birthday").toString().substring(0, 2)),
+                                Integer.parseInt(kakaoAccount.get("birthday").toString().substring(2, 4))
                         )
                 )
                 .build();

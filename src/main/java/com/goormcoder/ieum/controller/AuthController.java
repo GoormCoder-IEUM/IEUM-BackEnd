@@ -79,4 +79,11 @@ public class AuthController {
         return ResponseEntity.ok(accessToken);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃 (토큰 만료)")
+    public ResponseEntity<String> logout(@RequestBody @RequestParam("token") String token) {
+        refreshTokenService.expire(token);
+        return ResponseEntity.ok("성공적으로 로그아웃하였습니다.");
+    }
+
 }

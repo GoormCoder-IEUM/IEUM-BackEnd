@@ -2,6 +2,7 @@ package com.goormcoder.ieum.service;
 
 import com.goormcoder.ieum.domain.RefreshToken;
 import com.goormcoder.ieum.repository.RefreshTokenRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,12 @@ public class RefreshTokenService {
 
     public boolean isExists(String token) {
         return refreshTokenRepository.existsById(token);
+    }
+
+    @Transactional
+    public void expire(String token) {
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(token);
+        refreshToken.ifPresent(refreshTokenRepository::delete);
     }
 
 }
