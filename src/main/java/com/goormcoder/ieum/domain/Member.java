@@ -75,4 +75,9 @@ public class Member {
         this.password = password;
     }
 
+
+    //수정필요
+    public String getEmail() {
+        return "email";
+    }
 }

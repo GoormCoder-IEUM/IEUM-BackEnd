@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -36,7 +38,8 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final DestinationRepository destinationRepository;
     private final MemberService memberService;
-//    private final KakaoCalendarService kakaoCalendarService;
+    private final GoogleCalendarService googleCalendarService;
+
 
 
     @Transactional
@@ -212,5 +215,19 @@ public class PlanService {
             }
         }
 
+    }
+
+    @Transactional
+    public void finalizePlan(Long planId, UUID memberId) {
+        Member member = memberService.findById(memberId);
+        Plan plan = findByPlanId(planId);
+        validatePlanMember(plan, member);
+
+        try {
+            googleCalendarService.createGoogleCalendarEvent(plan);
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            //
+        }
     }
 }

@@ -16,10 +16,6 @@ public class WeatherData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")
-    private Plan plan;
-
     @Column(nullable = false)
     private String destinationName;
 
@@ -36,8 +32,7 @@ public class WeatherData {
     private String weatherDescription;
 
     @Builder
-    public WeatherData(Plan plan, String destinationName, LocalDate date, double temperature, int humidity, String weatherDescription) {
-        this.plan = plan;
+    public WeatherData(String destinationName, LocalDate date, double temperature, int humidity, String weatherDescription) {
         this.destinationName = destinationName;
         this.date = date;
         this.temperature = temperature;
@@ -45,7 +40,4 @@ public class WeatherData {
         this.weatherDescription = weatherDescription;
     }
 
-    public void setPlan(Plan plan) {
-        this.plan = plan;
-    }
 }

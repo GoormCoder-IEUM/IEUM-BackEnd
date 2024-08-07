@@ -29,13 +29,6 @@ import java.util.UUID;
 public class PlanController {
 
     private final PlanService planService;
-//    private final KakaoOauthService kakaoOauthService;
-
-//    @PostMapping("/auth/kakao")
-//    public ResponseEntity<String> kakaoAuth(@RequestParam String code) {
-//        String accessToken = kakaoOauthService.retrieveAccessToken(code);
-//        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
-//    }
 
     @GetMapping
     @Operation(summary = "여행지 목록 조회", description = "여행지 목록을 조회합니다.")
@@ -130,6 +123,13 @@ public class PlanController {
     public ResponseEntity<PlanInfoDto> changeVehicle(@PathVariable Long planId, @RequestParam PlanVehicle newVehicle) {
         UUID memberId = getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updateVehicle(planId, newVehicle, memberId));
+    }
+
+    @PostMapping("/{planId}/finalize")
+    @Operation(summary = "일정 확정후 구글캘린더 생성", description = "일정을 확정후 구글캘린더를 생성합니다.")
+    public ResponseEntity<Void> finalizePlan(@PathVariable Long planId, @RequestParam UUID memberId) {
+        planService.finalizePlan(planId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     private UUID getMemberId() {
