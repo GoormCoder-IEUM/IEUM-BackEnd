@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.jwt;
 
+import com.goormcoder.ieum.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -11,8 +12,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,28 +34,24 @@ public class SocketPreHandler implements ChannelInterceptor {
     public void onApplicationEvent(SessionConnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         String accessToken = resolveToken(accessor);
-        UUID memberId = getMemberId(accessToken);
-        accessor.getSessionAttributes().put("memberId", memberId);
+        CustomUserDetails userDetails = getUserDetails(accessToken);
+        accessor.getSessionAttributes().put("userDetails", userDetails);
     }
 
     private String resolveToken(StompHeaderAccessor accessor) {
         log.info("Accessor={}", accessor);
         if (accessor.getCommand() == StompCommand.CONNECT) {
             String accessToken = accessor.getFirstNativeHeader("Authorization");
-            String bearerToken = accessToken.trim();
-
-            if (!bearerToken.trim().isEmpty() && bearerToken.startsWith("Bearer ")) {
-                return bearerToken.substring(7);
+            if (accessToken != null && accessToken.startsWith("Bearer ")) {
+                return accessToken.substring(7).trim();
             }
         }
-
         return null;
     }
 
-    private UUID getMemberId(String accessToken) {
-            Authentication authentication = jwtProvider.getAuthentication(accessToken);
-            UUID memberId = UUID.fromString(authentication.getPrincipal().toString());
-            return memberId;
+    private CustomUserDetails getUserDetails(String accessToken) {
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
+        return (CustomUserDetails) authentication.getPrincipal();
     }
 
 }

@@ -40,8 +40,7 @@ public class PlaceService {
     private final PlanService planService;
 
     @Transactional
-    public PlaceInfoDto createPlace(Long planId, UUID memberId, PlaceCreateDto dto) {
-        Member member = memberService.findById(memberId);
+    public PlaceInfoDto createPlace(Long planId, Member member, PlaceCreateDto dto) {
         Plan plan = planService.findByPlanId(planId);
         Category category = findByCategoryId(dto.categoryId());
 
@@ -56,9 +55,9 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceFindDto sharePlace(PlaceShareDto dto, UUID memberId) {
-        Plan plan = validatePlanForWebsocket(dto.planId(), memberId);
-        Place place = validatePlaceForWebsocket(dto.placeId(), plan, memberId);
+    public PlaceFindDto sharePlace(PlaceShareDto dto, Member member) {
+        Plan plan = validatePlanForWebsocket(dto.planId(), member);
+        Place place = validatePlaceForWebsocket(dto.placeId(), plan, member);
 
         place.marksActivatedAt();
         place.marksStartedAt(plan.getStartedAt());
@@ -70,8 +69,7 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public PlaceFindDto getPlace(Long planId, Long placeId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public PlaceFindDto getPlace(Long planId, Long placeId, Member member) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
@@ -82,8 +80,7 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceFindDto> getAllPlaces(Long planId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public List<PlaceFindDto> getAllPlaces(Long planId, Member member) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
@@ -91,8 +88,7 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceFindDto> getSharedPlaces(Long planId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public List<PlaceFindDto> getSharedPlaces(Long planId, Member member) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
@@ -100,8 +96,7 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceFindDto> getSharedPlacesByDay(Long planId, Long day, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public List<PlaceFindDto> getSharedPlacesByDay(Long planId, Long day, Member member) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
@@ -110,8 +105,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public void deletePlace(Long planId, Long placeId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public void deletePlace(Long planId, Long placeId, Member member) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
 
@@ -121,8 +115,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public void updateVisitTime(Long planId, Long placeId, UUID memberId, PlaceVisitTimeUpdateDto dto) {
-        Member member = memberService.findById(memberId);
+    public void updateVisitTime(Long planId, Long placeId, Member member, PlaceVisitTimeUpdateDto dto) {
         Plan plan = planService.findByPlanId(planId);
         planService.validatePlanMember(plan, member);
         validatePlaceVisitTimeUpdateDto(dto, plan);
@@ -186,7 +179,7 @@ public class PlaceService {
 
     private void handleUnActivePlace(Place place, Member member) {
         if(place.isActivated()) {
-            if(!place.getMember().equals(member)) {
+            if(!place.getMember().getId().equals(member.getId())) {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }
         }
@@ -201,22 +194,19 @@ public class PlaceService {
         return plan.getNthDayDate(day);
     }
 
-    private Plan validatePlanForWebsocket(Long planId, UUID memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.MEMBER_NOT_FOUND, null, null));
+    private Plan validatePlanForWebsocket(Long planId, Member member) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_NOT_FOUND, member, null));
 
         plan.getPlanMembers().stream()
-                .filter(planMember -> planMember.getMember().equals(member))
+                .filter(planMember -> planMember.getMember().getId().equals(member.getId()))
                 .findFirst()
                 .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_MEMBER_NOT_FOUND, member, plan));
 
         return plan;
     }
 
-    private Place validatePlaceForWebsocket(Long placeId, Plan plan, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    private Place validatePlaceForWebsocket(Long placeId, Plan plan, Member member) {
         Place place = placeRepository.findById(placeId)
                         .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLACE_NOT_FOUND, member, plan));
 

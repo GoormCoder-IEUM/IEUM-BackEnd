@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.controller;
 
+import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.domain.enumeration.PlanVehicle;
 import com.goormcoder.ieum.dto.request.PlanCreateDto;
@@ -7,6 +8,7 @@ import com.goormcoder.ieum.dto.response.DestinationFindDto;
 import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
+import com.goormcoder.ieum.security.CustomUserDetails;
 import com.goormcoder.ieum.service.KakaoOauthService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,16 +41,16 @@ public class PlanController {
 
     @PostMapping
     @Operation(summary = "일정 생성", description = "일정을 생성합니다. 이동수단(vehicle) 유형 - PUBLIC_TRANSPORTATION 또는 OWN_CAR")
-    public ResponseEntity<PlanInfoDto> createPlan(@Valid @RequestBody PlanCreateDto planCreateDto) {
-        UUID memberId = getMemberId();
-        return ResponseEntity.status(HttpStatus.OK).body(planService.createPlan(planCreateDto, memberId));
+    public ResponseEntity<PlanInfoDto> createPlan(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody PlanCreateDto planCreateDto) {
+        Member member = userDetails.getMember();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.createPlan(planCreateDto, member));
     }
 
     @GetMapping("/{planId}")
     @Operation(summary = "일정 조회", description = "일정을 조회합니다.")
-    public ResponseEntity<PlanFindDto> getPlan(@PathVariable Long planId) {
-        UUID memberId = getMemberId();
-        return ResponseEntity.status(HttpStatus.OK).body(planService.getPlan(planId, memberId));
+    public ResponseEntity<PlanFindDto> getPlan(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId) {
+        Member member = userDetails.getMember();
+        return ResponseEntity.status(HttpStatus.OK).body(planService.getPlan(planId, member));
     }
 
     @GetMapping("/all")
@@ -84,9 +87,9 @@ public class PlanController {
 
     @DeleteMapping("/{planId}")
     @Operation(summary = "일정 삭제", description = "일정을 삭제합니다.")
-    public ResponseEntity<String> deletePlan(@PathVariable Long planId) {
-        UUID memberId = getMemberId();
-        planService.deletePlan(planId, memberId);
+    public ResponseEntity<String> deletePlan(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId) {
+        Member member = userDetails.getMember();
+        planService.deletePlan(planId, member);
         return ResponseEntity.status(HttpStatus.OK).body("일정이 삭제되었습니다.");
     }
 

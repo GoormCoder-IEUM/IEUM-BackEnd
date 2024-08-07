@@ -48,8 +48,7 @@ public class PlanService {
     }
 
     @Transactional
-    public PlanInfoDto createPlan(PlanCreateDto dto, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public PlanInfoDto createPlan(PlanCreateDto dto, Member member) {
         Destination destination = destinationRepository.findById(dto.destinationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.DESTINATION_NOT_FOUND.getMessage()));
         validatePlanCreateDto(dto);
@@ -63,8 +62,7 @@ public class PlanService {
     }
 
     @Transactional(readOnly = true)
-    public PlanFindDto getPlan(Long planId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public PlanFindDto getPlan(Long planId, Member member) {
         Plan plan = findByPlanId(planId);
         validatePlanMember(plan, member);
 
@@ -104,8 +102,7 @@ public class PlanService {
     }
 
     @Transactional
-    public void deletePlan(Long planId, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    public void deletePlan(Long planId, Member member) {
         Plan plan = findByPlanId(planId);
         validatePlanMember(plan, member);
         plan.markAsDeleted();
@@ -188,7 +185,7 @@ public class PlanService {
 
     public void validatePlanMember(Plan plan, Member member) {
         plan.getPlanMembers().stream()
-                .filter(planMember -> planMember.getMember().equals(member))
+                .filter(planMember -> planMember.getMember().getId().equals(member.getId()))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLAN_MEMBER_NOT_FOUND.getMessage()));
     }
