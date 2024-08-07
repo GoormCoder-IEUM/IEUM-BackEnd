@@ -40,8 +40,9 @@ public class PlaceController {
 
     @MessageMapping("/share-place")
     public void addPlace(@Payload PlaceShareDto placeShareDto, SimpMessageHeaderAccessor accessor) {
-        UUID memberId = (UUID) accessor.getSessionAttributes().get("memberId");
-        PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto, memberId);
+        CustomUserDetails userDetails = (CustomUserDetails) accessor.getSessionAttributes().get("userDetails");
+        Member member = userDetails.getMember();
+        PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto, member);
         messagingTemplate.convertAndSend("/sub/plans/" + placeShareDto.planId(), placeFindDto);
     }
 

@@ -55,9 +55,9 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceFindDto sharePlace(PlaceShareDto dto, UUID memberId) {
-        Plan plan = validatePlanForWebsocket(dto.planId(), memberId);
-        Place place = validatePlaceForWebsocket(dto.placeId(), plan, memberId);
+    public PlaceFindDto sharePlace(PlaceShareDto dto, Member member) {
+        Plan plan = validatePlanForWebsocket(dto.planId(), member);
+        Place place = validatePlaceForWebsocket(dto.placeId(), plan, member);
 
         place.marksActivatedAt();
         place.marksStartedAt(plan.getStartedAt());
@@ -194,22 +194,19 @@ public class PlaceService {
         return plan.getNthDayDate(day);
     }
 
-    private Plan validatePlanForWebsocket(Long planId, UUID memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.MEMBER_NOT_FOUND, null, null));
+    private Plan validatePlanForWebsocket(Long planId, Member member) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_NOT_FOUND, member, null));
 
         plan.getPlanMembers().stream()
-                .filter(planMember -> planMember.getMember().equals(member))
+                .filter(planMember -> planMember.getMember().getId().equals(member.getId()))
                 .findFirst()
                 .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLAN_MEMBER_NOT_FOUND, member, plan));
 
         return plan;
     }
 
-    private Place validatePlaceForWebsocket(Long placeId, Plan plan, UUID memberId) {
-        Member member = memberService.findById(memberId);
+    private Place validatePlaceForWebsocket(Long placeId, Plan plan, Member member) {
         Place place = placeRepository.findById(placeId)
                         .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLACE_NOT_FOUND, member, plan));
 
