@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,8 +20,11 @@ public class WeatherData {
     @Column(nullable = false)
     private String destinationName;
 
+//    @Column(nullable = false)
+//    private LocalDate date;
+
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDateTime dateTime;
 
     @Column(nullable = false)
     private double temperature;
@@ -32,9 +36,9 @@ public class WeatherData {
     private String weatherDescription;
 
     @Builder
-    public WeatherData(String destinationName, LocalDate date, double temperature, int humidity, String weatherDescription) {
+    public WeatherData(String destinationName, LocalDateTime dateTime, double temperature, int humidity, String weatherDescription) {
         this.destinationName = destinationName;
-        this.date = date;
+        this.dateTime = dateTime;
         this.temperature = temperature;
         this.humidity = humidity;
         this.weatherDescription = weatherDescription;
