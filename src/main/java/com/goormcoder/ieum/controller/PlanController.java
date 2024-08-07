@@ -55,32 +55,32 @@ public class PlanController {
 
     @GetMapping("/all")
     @Operation(summary = "전체 일정 조회", description = "모든 여행 일정을 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> listAllPlans() {
-        UUID memberId = getMemberId();
+    public ResponseEntity<List<PlanSortDto>> listAllPlans(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID memberId = userDetails.getMember().getId();
         List<PlanSortDto> plans = planService.listAllPlans(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted")
     @Operation(summary = "최신순으로 일정 조회", description = "최신순으로 정렬된 일정을 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> listPlansByStartDate() {
-        UUID memberId = getMemberId();
+    public ResponseEntity<List<PlanSortDto>> listPlansByStartDate(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID memberId = userDetails.getMember().getId();
         List<PlanSortDto> plans = planService.listPlansByStartDate(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
 
     @GetMapping("/sorted/{destinationName}")
     @Operation(summary = "지역별 일정 조회", description = "특정 지역의 일정을 최신순으로 정렬하여 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> listPlansByDestination(@PathVariable DestinationName destinationName) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<List<PlanSortDto>> listPlansByDestination(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable DestinationName destinationName) {
+        UUID memberId = userDetails.getMember().getId();
         List<PlanSortDto> plans = planService.listPlansByDestination(memberId, destinationName);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
-    
+
     @GetMapping("/sorted/{destinationName}/{start}/{end}")
     @Operation(summary = "특정 기간 동안의 지역별 일정 조회", description = "특정 기간 동안 특정 지역의 일정을 조회합니다.")
-    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<List<PlanSortDto>> getPlansByDestinationAndDateRange(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable DestinationName destinationName, @PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
+        UUID memberId = userDetails.getMember().getId();
         List<PlanSortDto> plans = planService.listPlansByDestinationAndDateRange(memberId, destinationName, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(plans);
     }
@@ -95,42 +95,43 @@ public class PlanController {
 
     @PutMapping("/{planId}")
     @Operation(summary = "일정 수정", description = "일정을 수정합니다.")
-    public ResponseEntity<PlanInfoDto> updatePlan(@PathVariable Long planId, @Valid @RequestBody PlanCreateDto planCreateDto) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<PlanInfoDto> updatePlan(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId, @Valid @RequestBody PlanCreateDto planCreateDto) {
+        UUID memberId = userDetails.getMember().getId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updatePlan(planId, planCreateDto, memberId));
     }
 
     @PutMapping("/{planId}/destination")
     @Operation(summary = "일정 목적지 변경", description = "일정의 목적지를 변경합니다.")
-    public ResponseEntity<PlanInfoDto> changeDestination(@PathVariable Long planId, @RequestParam Long newDestinationId) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<PlanInfoDto> changeDestination(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId, @RequestParam Long newDestinationId) {
+        UUID memberId = userDetails.getMember().getId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updateDestination(planId, newDestinationId, memberId));
     }
 
     @PutMapping("/{planId}/start-time")
     @Operation(summary = "일정 시작 시간 변경", description = "일정의 시작 시간을 변경합니다.")
-    public ResponseEntity<PlanInfoDto> changeStartTime(@PathVariable Long planId, @RequestParam LocalDateTime newStartTime) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<PlanInfoDto> changeStartTime(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId, @RequestParam LocalDateTime newStartTime) {
+        UUID memberId = userDetails.getMember().getId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updateStartTime(planId, newStartTime, memberId));
     }
 
     @PutMapping("/{planId}/end-time")
     @Operation(summary = "일정 끝나는 시간 변경", description = "일정의 끝나는 시간을 변경합니다.")
-    public ResponseEntity<PlanInfoDto> changeEndTime(@PathVariable Long planId, @RequestParam LocalDateTime newEndTime) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<PlanInfoDto> changeEndTime(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId, @RequestParam LocalDateTime newEndTime) {
+        UUID memberId = userDetails.getMember().getId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updateEndTime(planId, newEndTime, memberId));
     }
 
     @PutMapping("/{planId}/vehicle")
     @Operation(summary = "일정 교통수단 변경", description = "일정의 교통수단을 변경합니다.")
-    public ResponseEntity<PlanInfoDto> changeVehicle(@PathVariable Long planId, @RequestParam PlanVehicle newVehicle) {
-        UUID memberId = getMemberId();
+    public ResponseEntity<PlanInfoDto> changeVehicle(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId, @RequestParam PlanVehicle newVehicle) {
+        UUID memberId = userDetails.getMember().getId();
         return ResponseEntity.status(HttpStatus.OK).body(planService.updateVehicle(planId, newVehicle, memberId));
     }
 
     @PostMapping("/{planId}/finalize")
     @Operation(summary = "일정 확정후 구글캘린더 생성", description = "일정을 확정후 구글캘린더를 생성합니다.")
-    public ResponseEntity<Void> finalizePlan(@PathVariable Long planId, @RequestParam UUID memberId) {
+    public ResponseEntity<Void> finalizePlan(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId) {
+        UUID memberId = userDetails.getMember().getId();
         planService.finalizePlan(planId, memberId);
         return ResponseEntity.ok().build();
     }
