@@ -14,6 +14,7 @@ public record MemberFindDto(
         MemberRole role,
         Gender gender,
         LocalDate birth,
+        String email,
 
         String loginId,
         String oauthType,
@@ -30,6 +31,7 @@ public record MemberFindDto(
                 member.getRole(),
                 member.getGender(),
                 member.getBirth(),
+                member.getEmail(),
 
                 member.getLoginId(),
                 member.getOauthType(),

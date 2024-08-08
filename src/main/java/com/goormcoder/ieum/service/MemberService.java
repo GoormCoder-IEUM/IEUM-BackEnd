@@ -56,6 +56,7 @@ public class MemberService {
                 .role(MemberRole.USER)
                 .gender(oAuthUserInfoDto.gender())
                 .birth(oAuthUserInfoDto.birth())
+                .email(oAuthUserInfoDto.email())
                 .loginId(null)
                 .password(null)
                 .build();
@@ -93,6 +94,7 @@ public class MemberService {
                 .role(MemberRole.USER)
                 .gender(createDto.gender())
                 .birth(createDto.birth())
+                .email(createDto.email())
                 .loginId(createDto.loginId())
                 .password(passwordEncoder.encode(createDto.password()))
                 .oauthType(null)
@@ -107,6 +109,7 @@ public class MemberService {
         member.setName(updateDto.name());
         member.setGender(updateDto.gender());
         member.setBirth(updateDto.birth());
+        member.setEmail(updateDto.email());
         memberRepository.save(member);
         return member;
     }
