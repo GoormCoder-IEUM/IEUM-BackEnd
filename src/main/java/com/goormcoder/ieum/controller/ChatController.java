@@ -4,6 +4,7 @@ import com.goormcoder.ieum.domain.Chat;
 import com.goormcoder.ieum.domain.Member;
 import com.goormcoder.ieum.dto.request.ChatSendDto;
 import com.goormcoder.ieum.dto.response.ChatFindDto;
+import com.goormcoder.ieum.security.CustomUserDetails;
 import com.goormcoder.ieum.service.ChatService;
 import com.goormcoder.ieum.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +37,9 @@ public class ChatController {
 
     @MessageMapping("/share-plan/chats")
     public void sendMessage(@Payload ChatSendDto chatSendDto, SimpMessageHeaderAccessor accessor) {
-        UUID memberId = (UUID) accessor.getSessionAttributes().get("memberId");
-        Chat message = chatService.saveMessage(chatSendDto, memberId);
+        CustomUserDetails userDetails = (CustomUserDetails) accessor.getSessionAttributes().get("userDetails");
+        Member member = userDetails.getMember();
+        Chat message = chatService.saveMessage(chatSendDto, member);
         messagingTemplate.convertAndSend(
                 "/sub/chats/plan/" + message.getPlan().getId(),
                 ChatFindDto.of(message)

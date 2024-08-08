@@ -12,12 +12,14 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.EventReminder;
 import com.goormcoder.ieum.domain.Plan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -98,13 +102,26 @@ public class GoogleCalendarService {
                 .setLocation(String.valueOf(plan.getDestination().getDestinationName()))
                 .setDescription("Travel plan from " + plan.getStartedAt() + " to " + plan.getEndedAt());
 
+        // 타임존 설정
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+
+        // LocalDateTime을 ZonedDateTime으로 변환
+        ZonedDateTime startZoned = plan.getStartedAt().atZone(zoneId);
+        ZonedDateTime endZoned = plan.getEndedAt().atZone(zoneId);
+
+        // ISO 8601 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String startTimeStr = startZoned.format(formatter);
+        String endTimeStr = endZoned.format(formatter);
+
+        // EventDateTime 설정
         EventDateTime start = new EventDateTime()
-                .setDateTime(new com.google.api.client.util.DateTime(plan.getStartedAt().format(DateTimeFormatter.ISO_DATE_TIME)))
+                .setDateTime(new DateTime(startTimeStr))
                 .setTimeZone("Asia/Seoul");
         event.setStart(start);
 
         EventDateTime end = new EventDateTime()
-                .setDateTime(new com.google.api.client.util.DateTime(plan.getEndedAt().format(DateTimeFormatter.ISO_DATE_TIME)))
+                .setDateTime(new DateTime(endTimeStr))
                 .setTimeZone("Asia/Seoul");
         event.setEnd(end);
 
@@ -112,6 +129,16 @@ public class GoogleCalendarService {
 //                .map(planMember -> new EventAttendee().setEmail(planMember.getMember().getEmail()))
 //                .collect(Collectors.toList());
 //        event.setAttendees(attendees);
+
+        // 알림 설정
+        EventReminder[] reminderOverrides = new EventReminder[]{
+                new EventReminder().setMethod("email").setMinutes(3), // 1일 전 이메일 알림 24 * 60
+                new EventReminder().setMethod("popup").setMinutes(3), // 10분 전 팝업 알림 10
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(List.of(reminderOverrides));
+        event.setReminders(reminders);
 
         String calendarId = "primary";
         try {
