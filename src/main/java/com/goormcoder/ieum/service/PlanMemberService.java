@@ -37,38 +37,38 @@ public class PlanMemberService {
 
 
     @Transactional
-    public InviteResultDto invitePlanMember(UUID memberId, Long planId, UUID[] memberIds) {
+    public InviteResultDto invitePlanMember(Member member, Long planId, UUID[] memberIds) {
         // TODO : 일정에 일정 이름 필드 추가검토 -> 초대목록에 이름, 여행지로 표시되게 (ex : 놀러가자(제주))
-        checkContainPlanMember(memberId, planId);
+        checkContainPlanMember(member.getId(), planId);
         Plan plan = findPlanByPlanId(planId);
 
-        List<Member> members = Stream.of(memberIds)
+        List<Member> inviteMembers = Stream.of(memberIds)
                 .map(memberService::findById)
                 .toList();
 
         List<Member> successMembers = new ArrayList<>();
         List<Member> duplicateMembers = new ArrayList<>();
         
-        for(Member member : members) {
-            if(checkDuplicateInvite(member, planId)){
-                duplicateMembers.add(member);
+        for(Member inviteMember : inviteMembers) {
+            if(checkDuplicateInvite(inviteMember, planId)){
+                duplicateMembers.add(inviteMember);
                 continue; 
             }
             Invite invite = Invite.builder()
-                    .member(member)
+                    .member(inviteMember)
                     .plan(plan)
                     .acceptance(null)
                     .build();
             inviteRepository.save(invite);
-            successMembers.add(member);
+            successMembers.add(inviteMember);
         };
 
         return InviteResultDto.of(successMembers, duplicateMembers);
     }
 
     @Transactional
-    public void responseToInvite(UUID memberId, Long planId, InviteAcceptance inviteAcceptance) {
-        Invite invite = checkValidInvite(memberId, planId);
+    public void responseToInvite(Member member, Long planId, InviteAcceptance inviteAcceptance) {
+        Invite invite = checkValidInvite(member.getId(), planId);
 
         invite.setAcceptance(inviteAcceptance);
 
@@ -78,8 +78,8 @@ public class PlanMemberService {
     }
 
     @Transactional
-    public void cancelPlanMemberInvite(UUID memberId, UUID invitedMemberId, Long planId) {
-        checkContainPlanMember(memberId, planId);
+    public void cancelPlanMemberInvite(Member member, UUID invitedMemberId, Long planId) {
+        checkContainPlanMember(member.getId(), planId);
         Member invitedMember = memberService.findById(invitedMemberId);
         Invite invite = checkValidInvite(invitedMember.getId(), planId);
 
@@ -87,13 +87,13 @@ public class PlanMemberService {
 
     }
 
-    public List<InviteFindAllDto> findAllInviteById(UUID memberId){
-        List<Invite> invites = inviteRepository.findAllByMemberId(memberId);
+    public List<InviteFindAllDto> findAllInviteById(Member member){
+        List<Invite> invites = inviteRepository.findAllByMemberId(member.getId());
         return InviteFindAllDto.listOf(invites);
     }
 
-    public List<InviteFindAllDto> findAllInviteById(UUID memberId, Long planId){
-        checkContainPlanMember(memberId, planId);
+    public List<InviteFindAllDto> findAllInviteById(Member member, Long planId){
+        checkContainPlanMember(member.getId(), planId);
         List<Invite> invites = inviteRepository.findAllByPlanId(planId);
         return InviteFindAllDto.listOf(invites);
     }
