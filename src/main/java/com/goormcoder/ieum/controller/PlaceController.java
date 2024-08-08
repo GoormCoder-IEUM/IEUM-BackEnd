@@ -13,6 +13,7 @@ import com.goormcoder.ieum.security.CustomUserDetails;
 import com.goormcoder.ieum.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class PlaceController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @MessageMapping("/share-place")
-    public void addPlace(@Payload PlaceShareDto placeShareDto, SimpMessageHeaderAccessor accessor) {
+    public void addPlace(@Valid @Payload PlaceShareDto placeShareDto, SimpMessageHeaderAccessor accessor) {
         CustomUserDetails userDetails = (CustomUserDetails) accessor.getSessionAttributes().get("userDetails");
         Member member = userDetails.getMember();
         PlaceFindDto placeFindDto = placeService.sharePlace(placeShareDto, member);
@@ -49,7 +50,7 @@ public class PlaceController {
     @PostMapping()
     @Operation(summary = "장소 추가", description = "사용자별로 방문하고 싶은 장소를 추가합니다. 카테고리 유형 - 1(명소) 또는 2(식당/카페) 또는 3(숙소)")
     public ResponseEntity<PlaceInfoDto> createPlace(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                    @PathVariable Long planId, @RequestBody PlaceCreateDto placeCreateDto) {
+                                                    @PathVariable Long planId, @Valid @RequestBody PlaceCreateDto placeCreateDto) {
         Member member = userDetails.getMember();
         return ResponseEntity.status(HttpStatus.OK).body(placeService.createPlace(planId, member, placeCreateDto));
     }
@@ -96,7 +97,7 @@ public class PlaceController {
     @PatchMapping("/{placeId}")
     @Operation(summary = "장소 방문일시 설정", description = "공유한 장소의 방문일시를 설정합니다.")
     public ResponseEntity<String> updateVisitTime(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long planId,
-                                                  @PathVariable Long placeId, @RequestBody PlaceVisitTimeUpdateDto placeVisitTimeUpdateDto) {
+                                                  @PathVariable Long placeId, @Valid @RequestBody PlaceVisitTimeUpdateDto placeVisitTimeUpdateDto) {
         Member member = userDetails.getMember();
         placeService.updateVisitTime(planId, placeId, member, placeVisitTimeUpdateDto);
         return ResponseEntity.status(HttpStatus.OK).body("방문일시가 설정되었습니다.");
