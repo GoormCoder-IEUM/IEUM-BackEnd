@@ -13,6 +13,7 @@ import com.goormcoder.ieum.service.MemberService;
 import com.goormcoder.ieum.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class AuthController {
 
     @Operation(summary = "자체 회원 가입")
     @PostMapping("/join")
-    public ResponseEntity<MemberFindDto> create(@RequestBody MemberCreateDto createDto) {
+    public ResponseEntity<MemberFindDto> create(@Valid @RequestBody MemberCreateDto createDto) {
         Member member = memberService.createByLoginId(createDto);
         return ResponseEntity.ok(MemberFindDto.of(member));
     }

@@ -7,6 +7,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -36,6 +37,7 @@ public class Member {
     private MemberRole role;
     private Gender gender;
     private LocalDate birth;
+    private String email;
 
     private String loginId;
     private String password;
@@ -48,11 +50,12 @@ public class Member {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Member(String name, MemberRole role, Gender gender, LocalDate birth, String loginId, String password, String oauthType, String oauthId) {
+    public Member(String name, MemberRole role, Gender gender, LocalDate birth, String email, String loginId, String password, String oauthType, String oauthId) {
         this.name = name;
         this.role = role;
         this.gender = gender;
         this.birth = birth;
+        this.email = email;
         this.loginId = loginId;
         this.password = password;
         this.oauthType = oauthType;
@@ -71,13 +74,12 @@ public class Member {
         this.birth = birth;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
-
-    //수정필요
-    public String getEmail() {
-        return "email";
-    }
 }

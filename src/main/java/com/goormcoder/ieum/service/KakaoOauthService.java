@@ -6,6 +6,7 @@ import com.goormcoder.ieum.dto.response.OAuthUserInfoDto;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class KakaoOauthService {
 
@@ -37,6 +39,9 @@ public class KakaoOauthService {
         Map attributes = getUserInfoAttributes(accessToken);
         Map kakaoAccount = (Map) attributes.get("kakao_account");
         Map profile = (Map) kakaoAccount.get("profile");
+
+        log.info("attributes: {}", attributes);
+
         return OAuthUserInfoDto.builder()
                 .registrationId("kakao")
                 .id(attributes.get("id").toString())
