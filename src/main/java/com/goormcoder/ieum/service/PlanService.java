@@ -1,5 +1,6 @@
 package com.goormcoder.ieum.service;
 
+import com.google.api.services.calendar.model.EventDateTime;
 import com.goormcoder.ieum.domain.*;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.domain.enumeration.PlanVehicle;
@@ -24,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -56,9 +59,8 @@ public class PlanService {
         Plan plan = Plan.of(destination, dto.startedAt(), dto.endedAt(), dto.vehicle());
         plan.addPlanMember(PlanMember.of(plan, member));
 
-//        kakaoCalendarService.createKakaoSubCalendar(destination.getDestinationName().toString(), plan.getStartedAt(), plan.getEndedAt(), plan.getVehicle().name());
-
         return PlanInfoDto.of(planRepository.save(plan));
+
     }
 
     @Transactional(readOnly = true)
