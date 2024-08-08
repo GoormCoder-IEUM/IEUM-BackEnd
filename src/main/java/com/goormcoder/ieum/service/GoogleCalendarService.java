@@ -125,10 +125,10 @@ public class GoogleCalendarService {
                 .setTimeZone("Asia/Seoul");
         event.setEnd(end);
 
-//        List<EventAttendee> attendees = plan.getPlanMembers().stream()
-//                .map(planMember -> new EventAttendee().setEmail(planMember.getMember().getEmail()))
-//                .collect(Collectors.toList());
-//        event.setAttendees(attendees);
+        List<EventAttendee> attendees = plan.getPlanMembers().stream()
+                .map(planMember -> new EventAttendee().setEmail(planMember.getMember().getEmail()))
+                .collect(Collectors.toList());
+        event.setAttendees(attendees);
 
         // 알림 설정
         EventReminder[] reminderOverrides = new EventReminder[]{
