@@ -14,7 +14,6 @@ import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.exception.ForbiddenException;
 import com.goormcoder.ieum.exception.PlaceShareWebSocketException;
 import com.goormcoder.ieum.repository.CategoryRepository;
-import com.goormcoder.ieum.repository.MemberRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,10 +31,8 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final PlanRepository planRepository;
-    private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
 
-    private final MemberService memberService;
     private final PlanService planService;
 
     @Transactional
@@ -44,13 +41,13 @@ public class PlaceService {
         Category category = findByCategoryId(dto.categoryId());
 
         planService.validatePlanMember(plan, member);
-        validateDuplicatePlace(plan, member, dto.placeName());
+        validateDuplicatePlace(plan, member, dto.placeName(), dto.address());
 
         Place place = Place.of(plan, member, null, null, dto.placeName(), dto.address(), category);
         plan.addPlace(place);
         planRepository.save(plan);
 
-        return PlaceInfoDto.of(findByPlaceNameAndMember(dto.placeName(), member, plan));
+        return PlaceInfoDto.of(findByPlaceNameAndAddressAndMember(dto.placeName(), dto.address(), member, plan));
     }
 
     @Transactional
@@ -120,7 +117,7 @@ public class PlaceService {
         validatePlaceVisitTimeUpdateDto(dto, plan);
 
         Place place = findPlaceById(placeId);
-        if(place.isActivated()) {
+        if(place.isDeactivated()) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_NOT_ACTIVE.getMessage());
         }
 
@@ -139,12 +136,12 @@ public class PlaceService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.PLACE_NOT_FOUND.getMessage()));
     }
 
-    private Place findByPlaceNameAndMember(String placeName, Member member, Plan plan) {
-        return placeRepository.findByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(placeName, member, plan);
+    private Place findByPlaceNameAndAddressAndMember(String placeName, String address, Member member, Plan plan) {
+        return placeRepository.findByPlaceNameAndAddressAndMemberAndPlanAndDeletedAtIsNull(placeName, address, member, plan);
     }
 
-    private void validateDuplicatePlace(Plan plan, Member member, String placeName) {
-        if(placeRepository.existsByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(placeName, member, plan)) {
+    private void validateDuplicatePlace(Plan plan, Member member, String placeName, String address) {
+        if(placeRepository.existsByPlaceNameAndAddressAndMemberAndPlanAndDeletedAtIsNull(placeName, address, member, plan)) {
             throw new ConflictException(ErrorMessages.PLACE_CONFLICT);
         }
     }
@@ -164,7 +161,7 @@ public class PlaceService {
     }
 
     private void handleUnActivePlace(Place place, Member member) {
-        if(place.isActivated()) {
+        if(place.isDeactivated()) {
             if(!place.getMember().getId().equals(member.getId())) {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }
@@ -196,7 +193,11 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                         .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLACE_NOT_FOUND, member, plan));
 
-        if(placeRepository.existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName())) {
+        if(!place.getMember().getId().equals(member.getId())) {
+            throw new PlaceShareWebSocketException(ErrorMessages.FORBIDDEN_ACCESS, member, plan);
+        }
+
+        if(placeRepository.existsByPlanAndPlaceNameAndAddressAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName(), place.getAddress())) {
             throw new PlaceShareWebSocketException(ErrorMessages.SHARED_PLACE_CONFLICT, member, plan);
         }
 

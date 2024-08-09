@@ -15,9 +15,9 @@ import java.util.Optional;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    Place findByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(String placeName, Member member, Plan plan);
+    Place findByPlaceNameAndAddressAndMemberAndPlanAndDeletedAtIsNull(String placeName, String address, Member member, Plan plan);
 
-    Boolean existsByPlaceNameAndMemberAndPlanAndDeletedAtIsNull(String placeName, Member member, Plan plan);
+    Boolean existsByPlaceNameAndAddressAndMemberAndPlanAndDeletedAtIsNull(String placeName, String address, Member member, Plan plan);
 
     Optional<Place> findByIdAndDeletedAtIsNull(Long id);
 
@@ -25,7 +25,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findByPlanAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan);
 
-    Boolean existsByPlanAndPlaceNameAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan, String placeName);
+    Boolean existsByPlanAndPlaceNameAndAddressAndActivatedAtIsNotNullAndDeletedAtIsNull(Plan plan, String placeName, String address);
 
     @Query("SELECT p FROM Place p WHERE p.plan = :plan AND CAST(p.startedAt AS DATE) = :date AND p.startedAt IS NOT NULL AND p.activatedAt IS NOT NULL AND p.deletedAt IS NULL ORDER BY p.startedAt")
     List<Place> findByPlanAndDate(@Param("plan") Plan plan, @Param("date") LocalDate date);
