@@ -196,6 +196,10 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                         .orElseThrow(() -> new PlaceShareWebSocketException(ErrorMessages.PLACE_NOT_FOUND, member, plan));
 
+        if(!place.getMember().getId().equals(member.getId())) {
+            throw new PlaceShareWebSocketException(ErrorMessages.FORBIDDEN_ACCESS, member, plan);
+        }
+
         if(placeRepository.existsByPlanAndPlaceNameAndAddressAndActivatedAtIsNotNullAndDeletedAtIsNull(plan, place.getPlaceName(), place.getAddress())) {
             throw new PlaceShareWebSocketException(ErrorMessages.SHARED_PLACE_CONFLICT, member, plan);
         }
