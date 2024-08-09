@@ -14,7 +14,6 @@ import com.goormcoder.ieum.exception.ErrorMessages;
 import com.goormcoder.ieum.exception.ForbiddenException;
 import com.goormcoder.ieum.exception.PlaceShareWebSocketException;
 import com.goormcoder.ieum.repository.CategoryRepository;
-import com.goormcoder.ieum.repository.MemberRepository;
 import com.goormcoder.ieum.repository.PlaceRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,10 +31,8 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final PlanRepository planRepository;
-    private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
 
-    private final MemberService memberService;
     private final PlanService planService;
 
     @Transactional
