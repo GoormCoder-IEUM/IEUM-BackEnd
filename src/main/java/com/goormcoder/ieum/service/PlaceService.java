@@ -120,7 +120,7 @@ public class PlaceService {
         validatePlaceVisitTimeUpdateDto(dto, plan);
 
         Place place = findPlaceById(placeId);
-        if(place.isActivated()) {
+        if(place.isDeactivated()) {
             throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_NOT_ACTIVE.getMessage());
         }
 
@@ -164,7 +164,7 @@ public class PlaceService {
     }
 
     private void handleUnActivePlace(Place place, Member member) {
-        if(place.isActivated()) {
+        if(place.isDeactivated()) {
             if(!place.getMember().getId().equals(member.getId())) {
                 throw new ForbiddenException(ErrorMessages.FORBIDDEN_ACCESS);
             }

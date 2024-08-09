@@ -71,7 +71,7 @@ public class Place extends BaseEntity {
         this.activatedAt = LocalDateTime.now();
     }
 
-    public boolean isActivated() {
+    public boolean isDeactivated() {
         return this.activatedAt == null;
     }
 
