@@ -1,6 +1,5 @@
 package com.goormcoder.ieum.service;
 
-import com.google.api.services.calendar.model.EventDateTime;
 import com.goormcoder.ieum.domain.*;
 import com.goormcoder.ieum.domain.enumeration.DestinationName;
 import com.goormcoder.ieum.domain.enumeration.PlanVehicle;
@@ -14,23 +13,13 @@ import com.goormcoder.ieum.repository.DestinationRepository;
 import com.goormcoder.ieum.repository.PlanRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,9 +31,7 @@ public class PlanService {
     private final DestinationRepository destinationRepository;
     private final MemberService memberService;
     private final GoogleCalendarService googleCalendarService;
-
-
-
+    
     @Transactional
     public List<DestinationFindDto> getAllDestinations() {
         return DestinationFindDto.listOf(destinationRepository.findAll());

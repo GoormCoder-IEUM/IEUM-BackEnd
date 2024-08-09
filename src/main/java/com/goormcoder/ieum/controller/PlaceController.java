@@ -1,14 +1,11 @@
 package com.goormcoder.ieum.controller;
 
 import com.goormcoder.ieum.domain.Member;
-import com.goormcoder.ieum.domain.Place;
 import com.goormcoder.ieum.dto.request.PlaceCreateDto;
 import com.goormcoder.ieum.dto.request.PlaceShareDto;
 import com.goormcoder.ieum.dto.request.PlaceVisitTimeUpdateDto;
 import com.goormcoder.ieum.dto.response.PlaceFindDto;
 import com.goormcoder.ieum.dto.response.PlaceInfoDto;
-import com.goormcoder.ieum.exception.ErrorMessages;
-import com.goormcoder.ieum.exception.PlaceShareWebSocketException;
 import com.goormcoder.ieum.security.CustomUserDetails;
 import com.goormcoder.ieum.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,12 +19,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/plans/{planId}/places")
@@ -101,11 +95,6 @@ public class PlaceController {
         Member member = userDetails.getMember();
         placeService.updateVisitTime(planId, placeId, member, placeVisitTimeUpdateDto);
         return ResponseEntity.status(HttpStatus.OK).body("방문일시가 설정되었습니다.");
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Place> updatePlace(@PathVariable Long planId, @PathVariable Long id, @RequestBody Place updatedPlace) {
-        return ResponseEntity.ok(placeService.updatePlace(id, updatedPlace));
     }
 
 }

@@ -9,7 +9,6 @@ import com.goormcoder.ieum.dto.response.PlanFindDto;
 import com.goormcoder.ieum.dto.response.PlanInfoDto;
 import com.goormcoder.ieum.dto.response.PlanSortDto;
 import com.goormcoder.ieum.security.CustomUserDetails;
-import com.goormcoder.ieum.service.KakaoOauthService;
 import com.goormcoder.ieum.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -135,10 +133,5 @@ public class PlanController {
         planService.finalizePlan(planId, memberId);
         return ResponseEntity.ok().build();
     }
-
-    private UUID getMemberId() {
-        return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-    }
-
 
 }
