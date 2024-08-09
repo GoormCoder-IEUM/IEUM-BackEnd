@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -128,19 +127,6 @@ public class PlaceService {
         place.marksStartedAt(dto.startedAt());
         place.marksEndedAt(dto.endedAt());
         placeRepository.save(place);
-    }
-
-    public Place updatePlace(Long id, Place updatedPlace) {
-        return updatedPlace;
-//        return placeRepository.findById(id)
-//                .map(place -> {
-//                    place.setDeletedAt(updatedPlace.getDeletedAt());
-//                    return placeRepository.save(place);
-//                })
-//                .orElseGet(() -> {
-//                    updatedPlace.setId(id);
-//                    return placeRepository.save(updatedPlace);
-//                });
     }
 
     private Category findByCategoryId(Long categoryId) {
