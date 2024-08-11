@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -180,11 +181,11 @@ public class PlanService {
     }
 
     private void validatePlanCreateDto(PlanCreateDto dto) {
-        LocalDateTime start = dto.startedAt();
-        LocalDateTime end = dto.endedAt();
+        LocalDate start = dto.startedAt().toLocalDate();
+        LocalDate end = dto.endedAt().toLocalDate();
 
-        if (start.isAfter(end) || start.isEqual(end)) {
-            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLACE_VISIT_START_TIME.getMessage());
+        if(start.isAfter(end)) {
+            throw new IllegalArgumentException(ErrorMessages.BAD_REQUEST_PLAN_VISIT_START_TIME.getMessage());
         }
     }
 

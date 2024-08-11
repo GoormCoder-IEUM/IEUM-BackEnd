@@ -10,6 +10,7 @@ public enum ErrorMessages {
     // 400 BAD_REQUEST
     BAD_REQUEST_PLACE_VISIT_TIME("방문일시는 일정 시작일시 이전이거나 종료일시 이후일 수 없습니다."),
     BAD_REQUEST_PLACE_VISIT_START_TIME("시작일시는 종료일시보다 이전이어야 합니다."),
+    BAD_REQUEST_PLAN_VISIT_START_TIME("시작일자는 종료일자보다 이전이거나 같아야 합니다."),
     BAD_REQUEST_PLACE_NOT_ACTIVE("방문일시는 장소 공유 후 설정 가능합니다."),
     BAD_REQUEST_DAY_NOT_IN_DURATION("일정기간을 벗어납니다."),
 
