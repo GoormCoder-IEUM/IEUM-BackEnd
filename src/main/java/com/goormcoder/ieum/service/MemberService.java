@@ -74,8 +74,8 @@ public class MemberService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    public List<MemberFindAllDto> getAllMembersByLoginIdContainingAndIdIsNot(String keyword, UUID memberId) {
-        return MemberFindAllDto.listOf(memberRepository.findAllByLoginIdContainingAndIdIsNot(keyword, memberId));
+    public List<MemberFindAllDto> getAllMembersByLoginIdContainingAndIdIsNot(String keyword, Member member) {
+        return MemberFindAllDto.listOf(memberRepository.findAllByLoginIdContainingAndIdIsNot(keyword, member.getId()));
     }
 
     public Member findByLoginIdAndPassword(String loginId, String password) {
